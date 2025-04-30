@@ -1,0 +1,389 @@
+/* Modern Profile Styles */
+:root {
+    --primary-color: #2563eb;
+    --secondary-color: #1d4ed8;
+    --text-color: #1e293b;
+    --light-bg: #f8fafc;
+    --border-color: #e2e8f0;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #f8faff 0%, #eef2ff 100%);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.profile-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Header Section */
+.profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-header h1 {
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.profile-picture-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.profile-picture-wrapper {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.profile-picture {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+}
+
+.camera-icon {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 0.5rem;
+    font-size: 1.25rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.camera-icon:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0 0 0.5rem;
+}
+
+.profile-email {
+    color: #64748b;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Health Information Section */
+.health-info {
+    background: var(--light-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+}
+
+.health-info h3 {
+    color: var(--text-color);
+    font-size: 1.25rem;
+    margin: 0 0 1.5rem;
+    font-weight: 600;
+}
+
+.health-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.health-stat {
+    background: white;
+    padding: 1.25rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Profile Actions */
+.profile-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.action-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.primary-button {
+    background: var(--primary-color);
+    color: white;
+}
+
+.primary-button:hover {
+    background: var(--secondary-color);
+    transform: translateY(-1px);
+}
+
+.secondary-button {
+    background: var(--light-bg);
+    color: var(--text-color);
+}
+
+.secondary-button:hover {
+    background: #e2e8f0;
+    transform: translateY(-1px);
+}
+
+.danger-button {
+    background: #fee2e2;
+    color: var(--danger-color);
+}
+
+.danger-button:hover {
+    background: #fecaca;
+    transform: translateY(-1px);
+}
+
+/* Flash Messages */
+.flash-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 300px;
+}
+
+.flash-message {
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    color: white;
+    font-size: 14px;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.flash-message.success {
+    background-color: #4CAF50;
+}
+
+.flash-message.danger {
+    background-color: #f44336;
+}
+
+.flash-message.warning {
+    background-color: #ff9800;
+}
+
+.flash-message.info {
+    background-color: #2196F3;
+}
+
+/* Loading animation for the upload button */
+.ri-loader-4-line {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Profile Picture Container */
+.profile-picture-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.upload-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.choose-file-button,
+.upload-button {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.choose-file-button {
+    background: var(--primary-color);
+    color: white;
+}
+
+.choose-file-button:hover {
+    background: var(--secondary-color);
+    transform: translateY(-1px);
+}
+
+.upload-button {
+    background: var(--success-color);
+    color: white;
+}
+
+.upload-button:hover:not(:disabled) {
+    background: #0d9488;
+    transform: translateY(-1px);
+}
+
+.upload-button:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none;
+}
+
+.file-info {
+    color: #64748b;
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-section {
+        padding: 1rem;
+    }
+    
+    .profile-picture-wrapper {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .back-button-container {
+        padding: 0.75rem 1rem;
+    }
+    
+    .profile-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .health-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text-color: #f1f5f9;
+        --light-bg: #1e293b;
+        --border-color: #334155;
+    }
+
+    body {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+
+    .profile-section {
+        background: #0f172a;
+    }
+
+    .health-stat {
+        background: #1e293b;
+    }
+
+    .secondary-button {
+        background: #334155;
+        color: #f1f5f9;
+    }
+
+    .secondary-button:hover {
+        background: #475569;
+    }
+}
+
+.back-button-container {
+    padding: 1rem 2rem;
+    margin-bottom: 1rem;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+    background: var(--secondary-color);
+    transform: translateY(-1px);
+}
+
+.back-button i {
+    font-size: 1.25rem;
+}

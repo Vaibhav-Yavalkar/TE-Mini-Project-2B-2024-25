@@ -1,0 +1,864 @@
+{% extends "base.html" %}
+
+{% block title %}Diet Recommendations{% endblock %}
+{% block header_title %}Personalized Diet Recommendations{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Diet Recommendation Page Styling */
+    .recommendation-card {
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        margin-bottom: 2rem;
+    }
+    
+    .recommendation-header {
+        position: relative;
+        padding: 2rem;
+        border-radius: 20px 20px 0 0;
+        background: linear-gradient(135deg, #43cea2, #185a9d);
+        color: white;
+    }
+    
+    .diet-profile-form {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .diet-profile-tabs {
+        display: flex;
+        overflow-x: auto;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .diet-profile-tab {
+        padding: 1rem 1.5rem;
+        border-bottom: 3px solid transparent;
+        font-weight: 500;
+        color: var(--secondary-color);
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    
+    .diet-profile-tab.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+    }
+    
+    .diet-section {
+        margin-bottom: 2rem;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        background-color: white;
+    }
+    
+    .diet-section-header {
+        padding: 1rem 1.5rem;
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #e9ecef;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+    }
+    
+    .diet-section-header i {
+        margin-right: 0.5rem;
+        font-size: 1.25rem;
+        color: #43cea2;
+    }
+    
+    .diet-section-content {
+        padding: 1.5rem;
+    }
+    
+    .meal-plan {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    .meal-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+        background-color: #ffffff;
+    }
+    
+    .meal-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        border-color: #e0e0e0;
+    }
+    
+    .meal-card-header {
+        padding: 1rem 1.5rem;
+        background: linear-gradient(to right, #f9fcff, #f6f9fc);
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .meal-card-header h4 {
+        color: #333;
+        font-weight: 600;
+    }
+    
+    .meal-card-header .badge {
+        font-weight: 500;
+        padding: 0.5rem 0.75rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .meal-card-content {
+        padding: 1.5rem;
+    }
+    
+    .meal-card-content .bi-circle-fill {
+        color: var(--primary-color);
+        opacity: 0.8;
+        transition: all 0.2s;
+    }
+    
+    .meal-card-content div:hover .bi-circle-fill {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+    
+    .meal-card-content span {
+        color: #555;
+        font-size: 0.95rem;
+    }
+    
+    .meal-card-content ul {
+        padding-left: 1.5rem;
+        margin-bottom: 0;
+    }
+    
+    .meal-card-content li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .diet-tips {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    .tip-card {
+        background-color: #f8f9fa;
+        border-radius: 15px;
+        padding: 1.5rem;
+        border-left: 4px solid var(--primary-color);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .tip-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+    
+    .tip-card h5 {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+        justify-content: space-between;
+    }
+    
+    .tip-card h5 i.bi-plus-circle,
+    .tip-card h5 i.bi-dash-circle {
+        transition: transform 0.3s ease;
+    }
+    
+    .tip-card h5:hover i.bi-plus-circle,
+    .tip-card h5:hover i.bi-dash-circle {
+        transform: scale(1.2);
+    }
+    
+    .tip-card p.collapse.show {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    .tip-card h5 i:first-child {
+        margin-right: 0.5rem;
+    }
+    
+    /* Animated elements */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+    
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    
+    /* Progress wheel */
+    .progress-wheel {
+        width: 120px;
+        height: 120px;
+        position: relative;
+        margin: 0 auto;
+    }
+    
+    .progress-circle {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: conic-gradient(var(--primary-color) 0% 70%, #e9ecef 70% 100%);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .progress-circle::before {
+        content: "";
+        position: absolute;
+        width: 80%;
+        height: 80%;
+        border-radius: 50%;
+        background-color: white;
+    }
+    
+    .progress-value {
+        position: relative;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .meal-plan, .diet-tips {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="recommendation-card animate-fade-in">
+    <div class="recommendation-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1>Your Diet Recommendation</h1>
+                <p class="mb-0">Personalized nutrition plan based on your profile and medical conditions</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <span class="badge bg-light text-dark rounded-pill fs-6 px-3 py-2">
+                    <i class="bi bi-calendar-check me-1"></i> Updated: Today
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="diet-profile-form animate-fade-in delay-1">
+        <h4 class="mb-4">Your Diet Profile</h4>
+        
+        <div class="diet-profile-tabs">
+            <div class="diet-profile-tab active" data-tab="basic-information">Basic Information</div>
+            <div class="diet-profile-tab" data-tab="medical-conditions">Medical Conditions</div>
+        </div>
+        
+        <form id="dietProfileForm" method="post" action="{{ url_for('diet.update_diet_recommendation') }}">
+            <!-- Basic Information Tab Content (visible by default) -->
+            <div class="tab-content" id="basic-information-tab">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="age" class="form-label">Age</label>
+                        <input type="text" class="form-control" id="age" name="age" value="{{ user_profile.age|default(30) }}" readonly>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Height</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="height" name="height" value="{{ user_profile.height|default(5.0) }}" readonly>
+                            <span class="input-group-text">ft</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="weight" class="form-label">Weight (kg)</label>
+                        <input type="text" class="form-control" id="weight" name="weight" value="{{ user_profile.weight|default(65) }}" readonly>
+                    </div>
+                </div>
+
+                <div class="text-muted mb-3">
+                    <p class="small mb-0">BMI: <span id="bmi-value">{{ user_profile.bmi }}</span></p>
+                    <p class="small mb-0">BMI Category: <span>{{ diet_plan.bmi_category|default('Normal weight') }}</span></p>
+                </div>
+            </div>
+
+            <!-- Medical Conditions Tab Content (hidden by default) -->
+            <div class="tab-content" id="medical-conditions-tab" style="display: none;">
+                <h5 class="mb-3">Medical Conditions</h5>
+                <p class="text-muted small mb-3">Select any conditions that apply to you. This will help us tailor your diet recommendations.</p>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="diabetes" name="diseases[]" value="diabetes" {% if 'diabetes' in user_profile.diseases %}checked{% endif %}>
+                            <label class="form-check-label" for="diabetes">Diabetes</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="hypertension" name="diseases[]" value="hypertension" {% if 'hypertension' in user_profile.diseases %}checked{% endif %}>
+                            <label class="form-check-label" for="hypertension">Hypertension</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="heart_disease" name="diseases[]" value="heart disease" {% if 'heart disease' in user_profile.diseases %}checked{% endif %}>
+                            <label class="form-check-label" for="heart_disease">Heart Disease</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="obesity" name="diseases[]" value="obesity" {% if 'obese' in user_profile.diseases or 'obesity' in user_profile.diseases %}checked{% endif %}>
+                            <label class="form-check-label" for="obesity">Obesity</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">Update Recommendation</button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-4 animate-fade-in delay-2">
+            <div class="diet-section">
+                <div class="diet-section-header">
+                    <i class="bi bi-pie-chart-fill"></i>
+                    <span>Daily Needs</span>
+                </div>
+                <div class="diet-section-content text-center">
+                    <div class="progress-wheel mb-4 position-relative">
+                        <div class="progress-circle" style="background: conic-gradient(var(--primary-color) 0% 70%, #e9ecef 70% 100%);">
+                            {% if diet_plan.adjusted_calories and diet_plan.adjusted_calories != diet_plan.daily_calories %}
+                                <span class="progress-value">{{ diet_plan.adjusted_calories }}</span>
+                                <span class="position-absolute top-0 end-0 mt-2 me-2">
+                                    <button class="btn btn-sm text-primary border-0 p-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Adjusted based on your BMI">
+                                        <i class="bi bi-info-circle-fill"></i>
+                                    </button>
+                                </span>
+                            {% else %}
+                                <span class="progress-value">{{ diet_plan.daily_calories|default(1800) }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <h5>Daily Calories</h5>
+                    <p class="text-muted">Based on your age, weight, and height</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-4">
+                            <div class="border rounded py-2 px-1">
+                                {% set calories = diet_plan.adjusted_calories if diet_plan.adjusted_calories is defined else diet_plan.daily_calories|default(1800) %}
+                                {% set protein_g = (calories * 0.25 / 4)|int %}
+                                <h6 class="mb-1">{{ protein_g }}g</h6>
+                                <small class="text-muted d-block">Protein</small>
+                                <a href="#" class="small text-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Protein is essential for muscle repair and growth. Aim for 0.8-1g per kg of body weight.">
+                                    <i class="bi bi-info-circle-fill"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border rounded py-2 px-1">
+                                {% set carbs_g = (calories * 0.5 / 4)|int %}
+                                <h6 class="mb-1">{{ carbs_g }}g</h6>
+                                <small class="text-muted d-block">Carbs</small>
+                                <a href="#" class="small text-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Carbohydrates are your body's main source of energy. Focus on complex carbs from whole grains, fruits, and vegetables.">
+                                    <i class="bi bi-info-circle-fill"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border rounded py-2 px-1">
+                                {% set fat_g = (calories * 0.25 / 9)|int %}
+                                <h6 class="mb-1">{{ fat_g }}g</h6>
+                                <small class="text-muted d-block">Fat</small>
+                                <a href="#" class="small text-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Healthy fats are essential for hormone production and nutrient absorption. Choose sources like avocados, nuts, olive oil, and fatty fish.">
+                                    <i class="bi bi-info-circle-fill"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#nutritionInfo" aria-expanded="false">
+                            <i class="bi bi-plus-circle"></i> Nutritional Requirements
+                        </button>
+                        <div class="collapse mt-3" id="nutritionInfo">
+                            <div class="card card-body text-start">
+                                <h6 class="mb-2">Daily Nutritional Needs</h6>
+                                <ul class="small mb-1">
+                                    <li><strong>Water:</strong> 2-3 liters/day</li>
+                                    <li><strong>Fiber:</strong> 25-30g/day</li>
+                                    <li><strong>Calcium:</strong> 1000mg/day</li>
+                                    <li><strong>Iron:</strong> 8-18mg/day (women need more)</li>
+                                    <li><strong>Vitamin D:</strong> 600-800 IU/day</li>
+                                    <li><strong>Omega-3 Fatty Acids:</strong> 250-500mg/day</li>
+                                </ul>
+                                <p class="small mt-2 mb-0 text-muted">These are general guidelines. Individual needs may vary based on age, gender, activity level, and health conditions.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#foodSourcesInfo" aria-expanded="false">
+                            <i class="bi bi-plus-circle"></i> Food Sources
+                        </button>
+                        <div class="collapse mt-3" id="foodSourcesInfo">
+                            <div class="card card-body text-start">
+                                <div class="row">
+                                    <div class="col-md-4 mb-2">
+                                        <h6 class="mb-1 text-primary">Protein Sources</h6>
+                                        <ul class="small mb-3 ps-3">
+                                            <li>Chicken breast (26g per 100g)</li>
+                                            <li>Eggs (6g per egg)</li>
+                                            <li>Greek yogurt (10g per 100g)</li>
+                                            <li>Lentils (9g per 100g cooked)</li>
+                                            <li>Tofu (8g per 100g)</li>
+                                            <li>Cottage cheese (11g per 100g)</li>
+                                            <li>Salmon (20g per 100g)</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <h6 class="mb-1 text-primary">Carbohydrate Sources</h6>
+                                        <ul class="small mb-3 ps-3">
+                                            <li>Brown rice (23g per 100g cooked)</li>
+                                            <li>Sweet potatoes (20g per 100g)</li>
+                                            <li>Oats (66g per 100g dry)</li>
+                                            <li>Quinoa (21g per 100g cooked)</li>
+                                            <li>Whole grain bread (15g per slice)</li>
+                                            <li>Beans (20g per 100g cooked)</li>
+                                            <li>Bananas (23g per medium)</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="mb-1 text-primary">Healthy Fat Sources</h6>
+                                        <ul class="small mb-0 ps-3">
+                                            <li>Avocados (15g per 100g)</li>
+                                            <li>Olive oil (14g per tbsp)</li>
+                                            <li>Almonds (14g per 25g)</li>
+                                            <li>Walnuts (65g per 100g)</li>
+                                            <li>Chia seeds (9g per tbsp)</li>
+                                            <li>Flaxseeds (6g per tbsp)</li>
+                                            <li>Salmon (13g per 100g)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <h6 class="mb-2 text-primary">Essential Vitamins & Minerals</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm small">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Nutrient</th>
+                                                        <th>Function</th>
+                                                        <th>Food Sources</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Vitamin A</td>
+                                                        <td>Vision, immune function</td>
+                                                        <td>Sweet potatoes, carrots, spinach, eggs</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Vitamin C</td>
+                                                        <td>Immune support, collagen production</td>
+                                                        <td>Citrus fruits, bell peppers, strawberries, broccoli</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Vitamin D</td>
+                                                        <td>Bone health, immune function</td>
+                                                        <td>Fatty fish, egg yolks, fortified foods, sunlight</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Calcium</td>
+                                                        <td>Bone health, muscle function</td>
+                                                        <td>Dairy products, leafy greens, fortified foods</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Iron</td>
+                                                        <td>Oxygen transport, energy production</td>
+                                                        <td>Red meat, beans, spinach, fortified cereals</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Magnesium</td>
+                                                        <td>Muscle function, energy production</td>
+                                                        <td>Nuts, seeds, whole grains, leafy greens</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if diet_plan.calorie_suggestion %}
+                    <div class="mt-3">
+                        <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#calorieAdjustmentInfo" aria-expanded="false">
+                            <i class="bi bi-plus-circle"></i> Calorie Adjustment Suggestion
+                        </button>
+                        <div class="collapse mt-3" id="calorieAdjustmentInfo">
+                            <div class="card card-body text-start">
+                                <p class="mb-0 small">{{ diet_plan.calorie_suggestion }}</p>
+                                {% if diet_plan.adjusted_calories and diet_plan.adjusted_calories != diet_plan.daily_calories %}
+                                    <!-- <p class="mb-0 small fw-bold mt-2">Recommended: {{ diet_plan.adjusted_calories }} calories/day</p> -->
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if user_profile.diseases %}
+            <div class="diet-section mt-3">
+                <div class="diet-section-header">
+                    <i class="bi bi-heart-pulse"></i>
+                    <span>Medical Conditions</span>
+                </div>
+                <div class="diet-section-content">
+                    <ul class="list-group list-group-flush">
+                        {% for disease in user_profile.diseases %}
+                        <li class="list-group-item bg-transparent d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            <div>
+                                <h6 class="mb-0">{{ disease|capitalize }}</h6>
+                                <p class="small text-muted mb-0">Diet adjusted accordingly</p>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-8 animate-fade-in delay-3">
+            <div class="diet-section">
+                <div class="diet-section-header">
+                    <i class="bi bi-calendar-week"></i>
+                    <span>Recommended Meal Plan</span>
+                </div>
+                <div class="diet-section-content">
+                    <div class="meal-plan">
+                        <div class="meal-card mb-4">
+                            <div class="meal-card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-0"><i class="bi bi-sunrise me-2"></i>Breakfast</h4>
+                                    <small class="text-muted">7:00 - 8:00 AM</small>
+                                </div>
+                                <span class="badge bg-light text-primary">
+                                    {{ (diet_plan.adjusted_calories if diet_plan.adjusted_calories is defined else diet_plan.daily_calories|default(1800)) // 4 }} calories
+                                </span>
+                            </div>
+                            <div class="meal-card-content">
+                                {% if diet_plan.breakfast %}
+                                    {% for item in diet_plan.breakfast %}
+                                    <div class="d-flex align-items-start mb-2">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>{{ item }}</span>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="d-flex align-items-start mb-2">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>Oatmeal with berries (1 cup)</span>
+                                    </div>
+                                    <div class="d-flex align-items-start mb-2">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>Greek yogurt (1/2 cup)</span>
+                                    </div>
+                                    <div class="d-flex align-items-start mb-2">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>Mixed nuts (1/4 cup)</span>
+                                    </div>
+                                    <div class="d-flex align-items-start">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>Green tea or water</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="meal-card mb-4">
+                            <div class="meal-card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-0"><i class="bi bi-sun me-2"></i>Lunch</h4>
+                                    <small class="text-muted">12:30 - 1:30 PM</small>
+                                </div>
+                                <span class="badge bg-light text-primary">
+                                    {{ (diet_plan.adjusted_calories if diet_plan.adjusted_calories is defined else diet_plan.daily_calories|default(1800)) // 3 }} calories
+                                </span>
+                            </div>
+                            <div class="meal-card-content">
+                                {% if diet_plan.lunch %}
+                                    {% for item in diet_plan.lunch %}
+                                    <div class="d-flex align-items-start mb-2">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>{{ item }}</span>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="d-flex align-items-start mb-2">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>Grilled chicken salad</span>
+                                    </div>
+                                    <div class="d-flex align-items-start mb-2">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>Whole grain bread (1 slice)</span>
+                                    </div>
+                                    <div class="d-flex align-items-start mb-2">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>Olive oil dressing (1 tbsp)</span>
+                                    </div>
+                                    <div class="d-flex align-items-start">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>Fresh fruit</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="meal-card mb-4">
+                            <div class="meal-card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-0"><i class="bi bi-moon me-2"></i>Dinner</h4>
+                                    <small class="text-muted">7:00 - 8:00 PM</small>
+                                </div>
+                                <span class="badge bg-light text-primary">
+                                    {{ (diet_plan.adjusted_calories if diet_plan.adjusted_calories is defined else diet_plan.daily_calories|default(1800)) // 3 }} calories
+                                </span>
+                            </div>
+                            <div class="meal-card-content">
+                                {% if diet_plan.dinner %}
+                                    {% for item in diet_plan.dinner %}
+                                    <div class="d-flex align-items-start mb-2">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>{{ item }}</span>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="d-flex align-items-start mb-2">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>Baked salmon (4 oz)</span>
+                                    </div>
+                                    <div class="d-flex align-items-start mb-2">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>Steamed vegetables (1 cup)</span>
+                                    </div>
+                                    <div class="d-flex align-items-start mb-2">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>Brown rice (1/2 cup)</span>
+                                    </div>
+                                    <div class="d-flex align-items-start">
+                                        <i class="bi bi-circle-fill me-2 text-primary" style="font-size: 8px; margin-top: 8px;"></i>
+                                        <span>Lemon water</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="diet-section animate-fade-in delay-4">
+        <div class="diet-section-header">
+            <i class="bi bi-lightbulb"></i>
+            <span>General Diet Tips</span>
+        </div>
+        <div class="diet-section-content">
+            <div class="diet-tips">
+                <div class="tip-card">
+                    <h5 data-bs-toggle="collapse" data-bs-target="#hydration-tip" aria-expanded="false" style="cursor: pointer;">
+                        <i class="bi bi-cup-hot me-2"></i> Hydration
+                        <i class="bi bi-plus-circle ms-2 small"></i>
+                    </h5>
+                    <p class="collapse" id="hydration-tip">Aim to drink at least 2 liters of water daily. Limit sugary drinks and alcohol.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h5 data-bs-toggle="collapse" data-bs-target="#protein-tip" aria-expanded="false" style="cursor: pointer;">
+                        <i class="bi bi-egg-fried me-2"></i> Protein Sources
+                        <i class="bi bi-plus-circle ms-2 small"></i>
+                    </h5>
+                    <p class="collapse" id="protein-tip">Include lean meats, fish, eggs, dairy, legumes, tofu, and plant-based options for complete protein intake.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h5 data-bs-toggle="collapse" data-bs-target="#heart-tip" aria-expanded="false" style="cursor: pointer;">
+                        <i class="bi bi-heart-pulse me-2"></i> Heart Health
+                        <i class="bi bi-plus-circle ms-2 small"></i>
+                    </h5>
+                    <p class="collapse" id="heart-tip">Include omega-3 rich foods like salmon, sardines, walnuts, chia and flaxseeds in your diet.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h5 data-bs-toggle="collapse" data-bs-target="#portion-tip" aria-expanded="false" style="cursor: pointer;">
+                        <i class="bi bi-battery-half me-2"></i> Portion Control
+                        <i class="bi bi-plus-circle ms-2 small"></i>
+                    </h5>
+                    <p class="collapse" id="portion-tip">Be mindful of portion sizes to help maintain your calorie target.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h5 data-bs-toggle="collapse" data-bs-target="#carbs-tip" aria-expanded="false" style="cursor: pointer;">
+                        <i class="bi bi-flower1 me-2"></i> Quality Carbs
+                        <i class="bi bi-plus-circle ms-2 small"></i>
+                    </h5>
+                    <p class="collapse" id="carbs-tip">Choose complex carbohydrates: whole grains, oats, brown rice, quinoa, sweet potatoes, and legumes.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h5 data-bs-toggle="collapse" data-bs-target="#fats-tip" aria-expanded="false" style="cursor: pointer;">
+                        <i class="bi bi-droplet-fill me-2"></i> Healthy Fats
+                        <i class="bi bi-plus-circle ms-2 small"></i>
+                    </h5>
+                    <p class="collapse" id="fats-tip">Incorporate avocados, nuts, olive oil, and fatty fish for essential fatty acids that support brain health.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h5 data-bs-toggle="collapse" data-bs-target="#timing-tip" aria-expanded="false" style="cursor: pointer;">
+                        <i class="bi bi-alarm me-2"></i> Meal Timing
+                        <i class="bi bi-plus-circle ms-2 small"></i>
+                    </h5>
+                    <p class="collapse" id="timing-tip">Try to eat at regular intervals and avoid large meals close to bedtime.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h5 data-bs-toggle="collapse" data-bs-target="#colorful-tip" aria-expanded="false" style="cursor: pointer;">
+                        <i class="bi bi-rainbow me-2"></i> Colorful Plate
+                        <i class="bi bi-plus-circle ms-2 small"></i>
+                    </h5>
+                    <p class="collapse" id="colorful-tip">Eat a variety of colorful fruits and vegetables daily to get a wide range of vitamins, minerals and antioxidants.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.diet-profile-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Hide all tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                
+                // Show the corresponding tab content
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId + '-tab').style.display = 'block';
+            });
+        });
+        
+        // Show initial tab content
+        document.getElementById('basic-information-tab').style.display = 'block';
+        
+        // BMI calculation
+        function calculateBMI() {
+            const heightInput = document.getElementById('height');
+            const weightInput = document.getElementById('weight');
+            const bmiValue = document.getElementById('bmi-value');
+            
+            if (!heightInput || !weightInput || !bmiValue) {
+                return;
+            }
+            
+            const heightDecimal = parseFloat(heightInput.value) || 0;
+            const weight = parseFloat(weightInput.value) || 0;
+            
+            if (heightDecimal === 0 || weight === 0) {
+                return;
+            }
+            
+            // Convert decimal feet height to meters for BMI calculation
+            let feet = Math.floor(heightDecimal);
+            let inches = Math.floor((heightDecimal - feet) * 12);  // Use Math.floor to match backend behavior
+            
+            // Handle edge case: if inches becomes 12, adjust feet and inches
+            if (inches === 12) {
+                feet += 1;
+                inches = 0;
+            }
+            
+            const totalInches = (feet * 12) + inches;
+            const heightMeters = totalInches * 0.0254;
+            
+            // Calculate BMI
+            const bmi = weight / (heightMeters * heightMeters);
+            bmiValue.textContent = bmi.toFixed(1);  // Round to 1 decimal place
+        }
+        
+        // Calculate BMI on page load if height and weight have values
+        calculateBMI();
+        
+        // Add event listeners for height and weight inputs
+        const heightInput = document.getElementById('height');
+        if (heightInput) {
+            heightInput.addEventListener('input', calculateBMI);
+        }
+        
+        const weightInput = document.getElementById('weight');
+        if (weightInput) {
+            weightInput.addEventListener('input', calculateBMI);
+        }
+
+        // Toggle plus/minus icons for diet tips
+        document.querySelectorAll('.tip-card h5').forEach(element => {
+            element.addEventListener('click', function() {
+                const plusIcon = this.querySelector('.bi-plus-circle');
+                if (plusIcon) {
+                    plusIcon.classList.toggle('bi-plus-circle');
+                    plusIcon.classList.toggle('bi-dash-circle');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %} 

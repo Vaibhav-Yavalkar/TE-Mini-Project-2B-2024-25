@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart News</title>
+    <link rel="stylesheet" href="../static/css/favourites.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar">
+            <button class="close-button" onclick="toggleSidebar()">
+                <i data-lucide="x"></i>
+            </button>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">
+                        <i class="a" data-lucide="home"></i>
+                        Home
+                    </a>
+                    <a href="aboutus.html" class="nav-link">
+                        <i class="a" data-lucide="info"></i>
+                        About Us
+                    </a>
+                    <div class="nav-link">
+                        <i class="a" data-lucide="menu"></i>
+                        Categories
+                        <div class="dropdown-content">
+                            <div class="domain-section">
+                                <h3>Domain</h3>
+                                <select id="domainSelect">
+                                    <option value="business">Business</option>
+                                    <option value="technology">Politics</option>
+                                    <option value="sports">Sports</option>
+                                    <option value="entertainment">Technology</option>
+                                    <option value="entertainment">Startups</option>
+                                    <option value="entertainment">Science</option>
+                                    <option value="entertainment">Travel</option>
+                                    <option value="entertainment">Fashion</option>
+                                    <option value="entertainment">Entertainment</option>
+                                </select>
+                            </div>
+                            <div class="country-section">
+                                <h3>Country</h3>
+                                <select id="countrySelect">
+                                    <option value="in">India</option>
+                                    <option value="ir">International</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="weather.html" class="nav-link">
+                        <i class="a" data-lucide="cloud"></i>
+                        Weather
+                    </a>
+                    <a href="historical.html" class="nav-link">
+                        <i class="a" data-lucide="history"></i>
+                        Historical News
+                    </a>
+                    <a href="favourites.html" class="nav-link">
+                        <i class="a" data-lucide="heart"></i>
+                        Profile/Favourites
+                    </a>
+                    <div href="#" class="nav-link" id="google_translate_element">
+                        <i class="a" data-lucide="languages"></i>
+                        Language
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-content" class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-container">
+                    <button class="menu-button" onclick="toggleSidebar()">
+                        <i class="m" data-lucide="menu"></i>
+                    </button>
+                    <!-- <h1 class="header-title">SMART NEWS</h1> -->
+                    <div class="project-name">
+                        <span class="large-letter">S</span>mart <span class="large-letter">N</span>ews
+                    </div>
+                    <!-- <button class="login-button">
+                        <i data-lucide="log-in"></i>
+                    </button> -->
+                </div>
+            </header>
+
+            <!-- Favorites Content -->
+            <main class="main-container">
+                <div class="profile-section">
+                    <div class="user-info">
+                        <h3 id="user-name">User</h3>
+                        <p id="user-email">user@example.com</p>
+                    </div>
+                    <div class="user-icon">
+                        <div class="icon-circle" id="user-initial">U</div>
+                        <p id="user-name-icon">User Name</p>
+                        <button id="logout-button" class="signup-button" style="display: none;">Logout</button>
+                    </div>
+                </div>
+                <hr class="separator">
+
+                <div class="page-header">
+                    <h2>Your Favorite Articles</h2>
+                    <p>Articles you've saved for later reading</p>
+                </div>
+
+                <div class="articles-grid" id="articles-container">
+                    <!-- Articles will be inserted here by JavaScript -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const articlesContainer = document.getElementById('articles-container');
+            const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+            if (favorites.length === 0) {
+                articlesContainer.innerHTML = `
+                    <div class="no-results">
+                        <i data-lucide="heart"></i>
+                        <h3>No favorite articles found</h3>
+                        <p>Start adding your favorite articles from the Historical News or Dashboard sections.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            favorites.forEach(article => {
+                const articleCard = document.createElement('div');
+                articleCard.className = 'news-card';
+                articleCard.innerHTML = `
+                    <h3 class="news-title">${article.title}</h3>
+                    <div class="news-meta">${article.meta}</div>
+                    <p class="news-desc">${article.description}</p>
+                    <div class="card-footer">
+                        <span class="news-sentiment ${getSentimentClass(article.sentiment)}">${article.sentiment}</span>
+                        <a class="read-more-btn" href="${article.url}" target="_blank">
+                            Read More <i data-lucide="arrow-right" class="icon-xs"></i>
+                        </a>
+                    </div>
+                `;
+                articlesContainer.appendChild(articleCard);
+            });
+
+            lucide.createIcons();
+        });
+
+        function getSentimentClass(sentiment) {
+            if (!sentiment) return 'sentiment-neutral';
+            sentiment = sentiment.toLowerCase();
+            if (sentiment.includes('positive')) return 'sentiment-positive';
+            if (sentiment.includes('negative')) return 'sentiment-negative';
+            return 'sentiment-neutral';
+        }
+    </script>
+    
+    <script src="../static/css/favourites.js"></script>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,hi,mr',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> 
+</body>
+</html>

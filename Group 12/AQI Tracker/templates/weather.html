@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("city").addEventListener("keypress", function (event) {
+                if (event.key === "Enter") {
+                    fetchWeather();
+                }
+            });
+        });
+
+        async function fetchWeather() {
+            const cityInput = document.getElementById("city");
+            const city = cityInput.value.trim();
+            const resultDiv = document.getElementById("weatherResult");
+
+            if (!city) {
+                resultDiv.innerHTML = "<p class='error'>⚠️ Please enter a valid city name.</p>";
+                return;
+            }
+
+            resultDiv.innerHTML = "<p class='loading'>⏳ Fetching Weather Data...</p>";
+
+            try {
+                const response = await fetch("/get_weather", {
+                    method: "POST",
+                    body: new URLSearchParams({ city: city }),
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" }
+                });
+
+                const result = await response.json();
+
+                if (response.status !== 200 || !result.current_weather) {
+                    resultDiv.innerHTML = `<p class='error'>❌ ${result.error || "City not found. Please try again!"}</p>`;
+                    return;
+                }
+
+                resultDiv.innerHTML = `
+                    <div class="weather-card">
+                        <h2>${result.current_weather.city}, ${result.current_weather.country}</h2>
+                        <p class="temperature">🌡️ ${result.current_weather.current_temp}°C</p>
+                        <p class="description">🌥️ ${result.current_weather.description}</p>
+                        <p>🌡️ Feels Like: ${result.current_weather.feels_like}°C</p>
+                        <p>💧 Humidity: ${result.current_weather.humidity}%</p>
+                        <p>💨 Wind Speed: ${result.current_weather.wind_speed} m/s</p>
+                    </div>
+
+                    <h3>Future Predictions</h3>
+                    <div class="table-graph-container">
+                        <div class="table-container">
+                            <table>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Temperature (°C)</th>
+                                    <th>Humidity (%)</th>
+                                </tr>
+                                ${result.future_months.map((month, i) => `
+                                    <tr>
+                                        <td>${month}</td>
+                                        <td>${result.future_temp[i]}°C</td>
+                                        <td>${result.future_humidity[i]}%</td>
+                                    </tr>
+                                `).join('')}
+                            </table>
+                        </div>
+
+                        <!-- Stack the graphs vertically -->
+                        <div class="graph-container">
+                            <h3>Weather Prediction Graph</h3>
+                            <img id="weatherGraph" src="${result.plot_url}" alt="Weather Prediction Graph" class="responsive-graph">
+                        </div>
+                        
+                        <!-- You can add more graphs here if necessary -->
+                    </div>
+                `;
+
+                cityInput.value = ""; // Clear input field after successful fetch
+            } catch (error) {
+                resultDiv.innerHTML = `<p class='error'>⚠️ An error occurred. Please try again later.</p>`;
+                console.error("Weather Fetch Error:", error);
+            }
+        }
+
+        function showModal(title, description, link) {
+    document.getElementById("modalTitle").innerText = title;
+    document.getElementById("modalDescription").innerText = description;
+    document.getElementById("modalLink").href = link;
+    document.getElementById("newsModal").classList.remove("hidden");
+}
+
+function closeModal() {
+    document.getElementById("newsModal").classList.add("hidden");
+}
+
+function filterWeatherNews(category) {
+    const items = document.querySelectorAll(".weather-news-item");
+    items.forEach(item => {
+        const itemCategory = item.getAttribute("data-category");
+        if (category === "all" || itemCategory === category) {
+            item.style.display = "";
+        } else {
+            item.style.display = "none";
+        }
+    });
+}
+
+    </script>
+
+    <style>
+        /* Background Video */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+        }
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Container Styling */
+        .container {
+            position: relative;
+            text-align: center;
+            color: white;
+            padding: 20px;
+            margin-top: 10%;
+            z-index: 1;
+        }
+        header h1 {
+            font-size: 3rem;
+            text-shadow: 3px 3px 15px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Search Bar */
+        .search {
+            margin-top: 20px;
+        }
+        input {
+            padding: 12px;
+            font-size: 1rem;
+            width: 280px;
+            border-radius: 25px;
+            border: none;
+            outline: none;
+            transition: 0.3s;
+        }
+        input:focus {
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.8);
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 25px;
+            background-color: #3498db;
+            color: white;
+            transition: 0.3s ease-in-out;
+        }
+        button:hover {
+            background-color: #1f78b4;
+            transform: scale(1.05);
+        }
+
+        /* Weather Card */
+        .weather-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0px 4px 20px rgba(255, 255, 255, 0.2);
+        }
+        .temperature {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* Table & Graph */
+        .table-graph-container {
+            display: block;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .table-container table {
+            width: 100%;
+            max-width: 450px;
+            border-collapse: collapse;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table-container th, .table-container td {
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        /* Graph Styling */
+        .graph-container {
+            text-align: center;
+            margin-top: 20px;
+            width: 90%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .responsive-graph {
+            width: 100%;
+            height: 400px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Loading Animation */
+        .loading-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .loader {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 2.2rem;
+            }
+            input {
+                width: 220px;
+            }
+            .weather-card {
+                width: 90%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Video -->
+    <video autoplay muted loop id="bg-video">
+        <source src="{{ url_for('static', filename='background.mp4') }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Overlay -->
+    <div class="overlay"></div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <header>
+            <h1>Weather Forecast</h1>
+        </header>
+
+        <main>
+            <section class="search">
+                <h2>Enter City Name:</h2>
+                <input type="text" id="city" placeholder="Enter city name ...">
+                <button onclick="fetchWeather()">Get Weather</button>
+            </section>
+
+            <section id="weatherResult"></section>
+        </main>
+    </div>
+    
+<!-- Latest Weather News -->
+<h2 class="text-xl font-bold mt-4 mb-2">Latest Weather News</h2>
+
+<!-- Category Filters
+<div class="mb-4 space-x-2">
+    <button onclick="filterWeatherNews('all')" class="news-filter-btn">All</button>
+    <button onclick="filterWeatherNews('Forecast')" class="news-filter-btn">Forecast</button>
+    <button onclick="filterWeatherNews('Climate')" class="news-filter-btn">Climate</button>
+    <button onclick="filterWeatherNews('Extreme')" class="news-filter-btn">Extreme Weather</button>
+</div> -->
+
+<div id="weatherNewsList" class="news-list">
+  {% for article in weather_news %}
+    <div class="weather-news-item card mb-4 p-4" data-category="{{ article.category | default('General') }}">
+      <div class="flex items-center space-x-3 mb-3">
+        <img src="https://www.google.com/s2/favicons?domain={{ article.url }}" alt="source icon" class="w-6 h-6 rounded-full">
+        <div>
+          <p class="text-sm text-gray-500">{{ article.source.name }}</p>
+          <p class="text-xs text-gray-400">{{ article.publishedAt }}</p>
+        </div>
+      </div>
+      <a href="#" onclick="showModal(`{{ article.title | escape }}`, `{{ article.description | escape }}`, `{{ article.url }}`)" class="text-blue-500 font-semibold text-lg block mb-2 hover:underline">{{ article.title }}</a>
+      <p class="text-gray-300 text-sm">{{ article.description | truncate(120) }}</p>
+    </div>
+  {% endfor %}
+</div>
+
+
+
+</body>
+</html>

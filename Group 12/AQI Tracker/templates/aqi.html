@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Index Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("city").addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            fetchAQI();
+        }
+    });
+});
+
+// Function to fetch AQI data and pollutant predictions
+async function fetchAQI() {
+    const city = document.getElementById("city").value.trim();
+    const resultDiv = document.getElementById("aqiResult");
+
+    if (!city) {
+        resultDiv.innerHTML = "<p class='error'>⚠️ Please enter a city name.</p>";
+        return;
+    }
+
+    resultDiv.innerHTML = `<div class='loading-container'><div class='loader'></div><p>Fetching AQI Data...</p></div>`;
+
+    try {
+        // Fetch live AQI data from the backend
+        const response = await fetch("/get_aqi", {
+            method: "POST",
+            body: new URLSearchParams({ city }),
+            headers: { "Content-Type": "application/x-www-form-urlencoded" }
+        });
+
+        const result = await response.json();
+        console.log("🔹 API Response Received:", result);
+
+        if (!response.ok || !result?.aqi) {
+            resultDiv.innerHTML = `<p class='error'>❌ ${result.error || "City not found. Please try again!"}</p>`;
+            return;
+        }
+
+        // Extract AQI data
+        const { aqi, pm10 = 0, pm25, co, no2, so2, o3, city: cityName, country, last_updated } = result;
+        const { categoryColor, categoryText, precautionText } = getAQICategory(aqi);
+        const aqiPercentage = (aqi / 5) * 100;
+
+        resultDiv.innerHTML = `
+            <div class="aqi-card">
+                <h2>${cityName || "Unknown City"}, ${country || "N/A"}</h2>
+                <p class="aqi-value" style="color: ${categoryColor};">🌍 AQI: ${aqi}</p>
+                <p class="aqi-category">${categoryText}</p>
+                <div class="aqi-bar-container">
+                    <div class="aqi-bar" style="width: ${aqiPercentage}%; background-color: ${categoryColor};"></div>
+                </div>
+                <p class="precaution">${precautionText}</p>
+                <p>🌫️ PM2.5: ${pm25 || "N/A"} µg/m³</p>
+                <p>🌪️ PM10: ${pm10} µg/m³</p>
+                <p>🛢️ CO: ${co || "N/A"} µg/m³</p>
+                <p>☠️ NO₂: ${no2 || "N/A"} µg/m³</p>
+                <p>🧪 SO₂: ${so2 || "N/A"} µg/m³</p>
+                <p>🧬 O₃: ${o3 || "N/A"} µg/m³</p>
+                <p>📅 Last Updated: ${last_updated || "N/A"}</p>
+            </div>
+        `;
+
+        // Fetch pollutant predictions
+        const pollutantResponse = await fetch("/get_aqi_predictions", {
+            method: "POST",
+            body: new URLSearchParams({ city, pm10, o3, no2 }),
+            headers: { "Content-Type": "application/x-www-form-urlencoded" }
+        });
+
+        const pollutantResult = await pollutantResponse.json();
+
+        if (!pollutantResponse.ok || pollutantResult.error) {
+            resultDiv.innerHTML += `<p class='error'>❌ ${pollutantResult.error || "Failed to fetch pollutant predictions."}</p>`;
+            return;
+        }
+
+        // Update charts with new predictions
+        updatePollutantCharts(pollutantResult);
+
+    } catch (error) {
+        resultDiv.innerHTML = `<p class='error'>⚠️ An error occurred. Please try again later.</p>`;
+        console.error("❌ AQI Fetch Error:", error);
+    }
+}
+
+// Function to get AQI category, color, and precautions
+function getAQICategory(aqi) {
+    let categoryColor = "gray";
+    let categoryText = "Unknown";
+    let precautionText = "❓ Unable to determine air quality.";
+
+    if (aqi === 1) {
+        categoryColor = "green";
+        categoryText = "Good";
+        precautionText = "✅ Air quality is good. Enjoy outdoor activities!";
+    } else if (aqi === 2) {
+        categoryColor = "yellow";
+        categoryText = "Fair";
+        precautionText = "⚠️ Some pollutants may be a concern for sensitive individuals.";
+    } else if (aqi === 3) {
+        categoryColor = "orange";
+        categoryText = "Moderate";
+        precautionText = "🔸 Sensitive groups should limit prolonged outdoor activities.";
+    } else if (aqi === 4) {
+        categoryColor = "#8B4000";
+        categoryText = "Poor";
+        precautionText = "🚨 Unhealthy air! Reduce outdoor exposure.";
+    } else if (aqi === 5) {
+        categoryColor = "red";
+        categoryText = "Very Poor";
+        precautionText = "☠️ Hazardous air quality! Stay indoors.";
+    }
+
+    return { categoryColor, categoryText, precautionText };
+}
+
+// Update pollutant prediction charts
+function updatePollutantCharts(data) {
+    const { future_months: months, pm10_predictions, so2_predictions, o3_predictions, plot_url } = data;
+
+    // Chart configurations
+    const chartConfigs = [
+        { id: "pm10Chart", label: "PM10 µg/m³", data: pm10_predictions, color: "orange" },
+        { id: "so2Chart", label: "SO₂ µg/m³", data: so2_predictions, color: "blue" },
+        { id: "o3Chart", label: "O₃ µg/m³", data: o3_predictions, color: "green" }
+    ];
+
+    // Iterate over chart configurations
+    chartConfigs.forEach(({ id, label, data, color }) => {
+        const ctx = document.getElementById(id)?.getContext("2d");
+        if (!ctx) return;
+
+        // Destroy existing chart if it exists
+        if (ctx.chart) {
+            ctx.chart.destroy();
+        }
+
+        // Create a new chart
+        ctx.chart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: months,
+                datasets: [{ label, data, borderColor: color, fill: false }]
+            }
+        });
+    });
+
+    // Display the generated plot image
+    if (plot_url) {
+        const plotContainer = document.getElementById("chartContainer");
+        plotContainer.innerHTML = `
+            <h2>Predicted AQI Plot</h2>
+            <img src="${plot_url}" alt="AQI Prediction Plot" width="800" style="margin-top: 20px;">
+        `;
+    }
+}
+
+function showModal(title, description, link) {
+    document.getElementById("modalTitle").innerText = title;
+    document.getElementById("modalDescription").innerText = description;
+    document.getElementById("modalLink").href = link;
+    document.getElementById("newsModal").classList.remove("hidden");
+}
+
+function closeModal() {
+    document.getElementById("newsModal").classList.add("hidden");
+}
+
+function filterNews(category) {
+    const items = document.querySelectorAll(".news-item");
+    items.forEach(item => {
+        const itemCategory = item.getAttribute("data-category");
+        if (category === "all" || itemCategory === category) {
+            item.style.display = "";
+        } else {
+            item.style.display = "none";
+        }
+    });
+}
+
+    </script>
+
+
+    <style>
+        /* Background Video */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+        }
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Container Styling */
+        .container {
+            position: relative;
+            text-align: center;
+            color: white;
+            padding: 20px;
+            margin-top: 10%;
+        }
+        header h1 {
+            font-size: 3rem;
+            text-shadow: 3px 3px 15px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Search Bar */
+        .search {
+            margin-top: 20px;
+        }
+        input {
+            padding: 12px;
+            font-size: 1rem;
+            width: 320px;
+            border-radius: 25px;
+            border: none;
+            outline: none;
+            transition: 0.3s;
+        }
+        input:focus {
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.8);
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 25px;
+            background-color: #3498db;
+            color: white;
+            transition: 0.3s ease-in-out;
+        }
+        button:hover {
+            background-color: #1f78b4;
+            transform: scale(1.05);
+        }
+
+        /* AQI Card */
+        .aqi-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0px 4px 20px rgba(255, 255, 255, 0.2);
+            max-width: 400px;
+        }
+        .aqi-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* Loading Animation */
+        .loading-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .loader {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 2.2rem;
+            }
+            input {
+                width: 260px;
+            }
+            .aqi-card {
+                width: 90%;
+                padding: 15px;
+            }
+        }
+
+        .aqi-bar-container {
+            width: 100%;
+            height: 15px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 7px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .aqi-bar {
+            height: 100%;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .charts {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chart-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .chart-grid canvas {
+            max-width: 400px;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background video -->
+    <video autoplay muted loop id="bg-video">
+        <source src="{{ url_for('static', filename='background.mp4') }}" type="video/mp4">
+    </video>
+
+    <!-- Overlay to darken background -->
+    <div class="overlay"></div>
+
+    <!-- Main container for content -->
+    <div class="container">
+        <!-- Header Section -->
+        <header>
+            <h1>Air Quality Index (AQI) Tracker</h1>
+        </header>
+
+        <!-- Main content section -->
+        <main>
+            <!-- Search Section -->
+            <section class="search">
+                <label for="city"><h2>Enter City Name:</h2></label>
+                <input type="text" id="city" placeholder="Enter city name ..." autofocus>
+                <button onclick="fetchAQI()" aria-label="Check AQI">Check AQI</button>
+            </section>
+        
+            <!-- Result Section for AQI Data -->
+            <section id="aqiResult"></section>
+            
+            <!-- Section for Predicted Pollution Levels -->
+            <section id="chartContainer" class="charts">
+                
+                <img id="predictionPlot" src="" alt="AQI Prediction Plot" width="800" style="display: none; margin-top: 20px;">
+            </section>
+            
+        </main>
+        
+    </div>
+    
+<!-- Latest AQI News -->
+<h2 class="text-xl font-bold mt-4 mb-2">Latest AQI News</h2>
+
+<!-- Category Filters
+<div class="mb-4 space-x-2">
+    <button onclick="filterAqiNews('all')" class="news-filter-btn">All</button>
+    <button onclick="filterAqiNews('Pollution')" class="news-filter-btn">Pollution</button>
+    <button onclick="filterAqiNews('Health')" class="news-filter-btn">Health</button>
+    <button onclick="filterAqiNews('Policy')" class="news-filter-btn">Policy</button>
+</div> -->
+
+<div id="aqiNewsList" class="aqi-news-list">
+  {% for article in aqi_news %}
+    <div class="aqi-news-item card mb-4 p-4" data-category="{{ article.category | default('General') }}">
+      <div class="flex items-center space-x-3 mb-3">
+        <img src="https://www.google.com/s2/favicons?domain={{ article.url }}" alt="source icon" class="w-6 h-6 rounded-full">
+        <div>
+          <p class="text-sm text-gray-500">{{ article.source.name }}</p>
+          <p class="text-xs text-gray-400">{{ article.publishedAt }}</p>
+        </div>
+      </div>
+      <a href="#" onclick="showModal(`{{ article.title | escape }}`, `{{ article.description | escape }}`, `{{ article.url }}`)" class="text-orange-500 font-semibold text-lg block mb-2 hover:underline">{{ article.title }}</a>
+      <p class="text-gray-300 text-sm">{{ article.description | truncate(120) }}</p>
+    </div>
+  {% endfor %}
+</div>
+
+    
+
+</body>
+</html>

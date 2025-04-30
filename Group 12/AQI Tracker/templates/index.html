@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Weather & AQI Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <style>
+        /* Ensuring full coverage of video background */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .container {
+            position: relative;
+            text-align: center;
+            color: white;
+            padding: 100px;
+            margin-top: 15%;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+        }
+        .buttons {
+    margin-top: 30px;
+    display: flex; /* Arrange buttons side by side */
+    justify-content: center; /* Center the buttons horizontally */
+    gap: 20px; /* Add space between the buttons */
+}
+
+.buttons button {
+    width: 500%; /* Increase the button width to 60% of the container */
+    padding: 150px;
+    font-size: 1.2rem;
+    border: none;
+    cursor: pointer;
+    border-radius: 12px; /* Rectangular shape */
+    transition: all 0.3s ease-in-out;
+    color: white;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+
+.buttons button:first-child {
+    background-image: url("{{ url_for('static', filename='cards/weather.jpg') }}");
+}
+
+.buttons button:last-child {
+    background-image: url("{{ url_for('static', filename='cards/aqi.jpg') }}");
+}
+
+.buttons button span {
+    position: relative;
+    z-index: 1;
+}
+
+.buttons button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.buttons button:first-child:hover {
+    background-color: rgba(247, 183, 51, 0.7);
+}
+
+.buttons button:last-child:hover {
+    background-color: rgba(52, 152, 219, 0.7);
+}
+
+        /* City Info Display */
+        .city-info {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .city-card {
+            background: linear-gradient(145deg, #0000);
+            color: white;   
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+        .city-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+        .city-card h3 {
+            font-size: 1.8rem;
+            margin: 0;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .city-card p {
+            font-size: 1.2rem;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .city-card p span {
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            .buttons button {
+                font-size: 1.2rem;
+                padding: 18px 30px; /* Adjusted padding for smaller screens */
+            }
+            .city-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Style for the text below the buttons */
+.info-text {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+    </style>
+</head>
+<body>
+
+    <!-- Video Background -->
+    <video autoplay muted loop id="bg-video">
+        <source src="{{ url_for('static', filename='background.mp4') }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Overlay -->
+    <div class="overlay"></div>
+
+    <!-- Main Content Container -->
+    <div class="container">
+
+        <!-- Header Section -->
+        <header>
+            <h1>Welcome to Air Quality & Weather Tracker</h1>
+        </header>
+
+        <!-- Main Section with Info -->
+        <section class="buttons">
+            <button onclick="window.location.href='/weather'" aria-label="Check Weather Forecast">
+                <span>🌤️ Check Weather Forecast</span>
+            </button>
+            <button onclick="window.location.href='/aqi'" aria-label="Check AQI Levels">
+                <span>🌎 Check AQI Levels</span>
+            </button>
+        </section>
+
+        <p class="info-text">Top Indian Cities Weather and AQI</p>
+
+
+        <!-- City Weather and AQI Info -->
+        <section class="city-info" id="city-info">
+            <!-- City information will be inserted here dynamically -->
+        </section>
+    </div>
+
+    <script>
+        // Function to fetch weather and AQI data for a list of cities
+        const cities = ['New Delhi', 'Mumbai', 'Chennai', 'Bangalore', 'Ahmedabad', 'Kolkata', 'Pune', 'Hyderabad', 'Visakhapatnam'];
+        const apiKey = '842ba045f34f90b82db9ceda40908626'; // Replace with your actual API key
+
+        // City image URLs
+        const cityImages = {
+            'New Delhi': '/static/cards/newdelhi.jpg',
+            'Mumbai': '/static/cards/mumbai.jpg',
+            'Chennai': '/static/cards/chennai.jpg',
+            'Bangalore': '/static/cards/banglore.jpg',
+            'Ahmedabad': '/static/cards/ahmedabad.jpg',
+            'Kolkata': '/static/cards/kolkata.jpg',
+            'Pune': '/static/cards/pune.jpg',
+            'Hyderabad': '/static/cards/hyderabad.jpg',
+            'Visakhapatnam': '/static/cards/vishakpatnam.jpg'
+        };
+
+        function fetchWeatherAndAQI(city) {
+            const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+            // Fetch weather data
+            fetch(weatherUrl)
+                .then(response => response.json())
+                .then(weatherData => {
+                    if (weatherData.cod === 200) {
+                        const lat = weatherData.coord.lat;
+                        const lon = weatherData.coord.lon;
+
+                        // Fetch AQI data once we have latitude and longitude
+                        const aqiUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+
+                        fetch(aqiUrl)
+                            .then(response => response.json())
+                            .then(aqiData => {
+                                if (aqiData.list && aqiData.list[0]) {
+                                    displayCityInfo(weatherData, aqiData.list[0], city);
+                                } else {
+                                    console.error('AQI data not found for:', city);
+                                }
+                            })
+                            .catch(error => console.error('Error fetching AQI data:', error));
+                    } else {
+                        console.error('Weather data not found for:', city);
+                    }
+                })
+                .catch(error => console.error('Error fetching weather data:', error));
+        }
+
+        function displayCityInfo(weatherData, aqiData, city) {
+            const cityInfo = document.getElementById('city-info');
+            const cityCard = document.createElement('div');
+            cityCard.className = 'city-card';
+            cityCard.innerHTML = ` 
+                <img src="${cityImages[city]}" alt="${city}" style="width: 100%; height: auto; border-radius: 8px;">
+                <h3>${weatherData.name}</h3>
+                <p><span>Temperature:</span> ${weatherData.main.temp}°C</p>
+                <p><span>Weather:</span> ${weatherData.weather[0].description}</p>
+                <p><span>AQI:</span> ${aqiData.main.aqi}</p>
+            `;
+            cityInfo.appendChild(cityCard);
+        }
+
+        // Fetch weather and AQI data for each city on page load
+        cities.forEach(city => fetchWeatherAndAQI(city));
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,94 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="container-fluid" style="padding: 2rem; background: rgba(0, 0, 0, 0.6); min-height: 100vh; position: relative;">
+    <h1 style="text-align: center; color: white; font-size: 2.5rem; margin-bottom: 1rem;">Stock Market Prediction</h1>
+    
+    <h2 style="text-align: center; color: #3498db; font-size: 2rem; margin-bottom: 4rem;">
+        Prediction Analysis for {{ stockName }}
+        <span style="display: block; font-size: 1rem; color: rgba(255, 255, 255, 0.7); margin-top: 0.5rem;">
+            S&P 500 Stock
+        </span>
+    </h2>
+    
+    <div style="max-width: 1800px; margin: 0 auto; padding: 0 2rem;">
+        <div style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 3rem; flex-wrap: wrap;">
+            <!-- Price Prediction Graph -->
+            <div style="flex: 1; min-width: 600px; max-width: 800px;">
+                <div style="background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);">
+                    <img 
+                        src="/static/stocks/{{ stockName }}/{{ stockName }}1.png" 
+                        alt="Price Prediction Graph"
+                        style="width: 100%; height: auto; object-fit: contain;"
+                    >
+                </div>
+            </div>
+
+            <!-- Model Loss Graph -->
+            <div style="flex: 1; min-width: 600px; max-width: 800px;">
+                <div style="background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);">
+                    <img 
+                        src="/static/stocks/{{ stockName }}/{{ stockName }}2.png" 
+                        alt="Model Loss Graph"
+                        style="width: 100%; height: auto; object-fit: contain;"
+                    >
+                </div>
+            </div>
+        </div>
+
+        <!-- Prediction Info -->
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <div style="color: white; font-size: 1.5rem; line-height: 2;">
+                <p style="margin: 0;">
+                    Predicted Price: <span style="color: #3498db;">${{ stockData[0] }}</span>
+                </p>
+                <p style="margin: 0;">
+                    Accuracy of Prediction: <span style="color: #3498db;">{{ stockData[1] }}%</span>
+                </p>
+            </div>
+        </div>
+
+        <div style="text-align: center; color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">
+            Stock Market Prediction ©Team_09
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #1a1a1a !important;
+        margin: 0;
+        padding: 0;
+        position: relative;
+    }
+    
+    img {
+        transition: transform 0.3s ease;
+    }
+    
+    img:hover {
+        transform: scale(1.02);
+    }
+
+    @media (max-width: 1300px) {
+        div[style*="min-width: 600px"] {
+            min-width: 100% !important;
+        }
+    }
+
+    /* Chatbot button positioning */
+    #chat-circle {
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        z-index: 1000 !important;
+    }
+
+    .chat-box {
+        position: fixed !important;
+        bottom: 100px !important;
+        right: 20px !important;
+        z-index: 1000 !important;
+    }
+</style>
+{% endblock %}

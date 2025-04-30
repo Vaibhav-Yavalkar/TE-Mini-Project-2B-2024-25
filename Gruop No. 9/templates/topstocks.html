@@ -1,0 +1,196 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="container mt-4">
+    <style>
+        .stocks-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stock-section {
+            background: transparent;
+            padding: 1rem;
+        }
+
+        .stock-cards {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .stock-item {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stock-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px var(--hover-shadow);
+        }
+
+        .stock-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 4px;
+        }
+
+        .gainers .stock-item::before {
+            background: linear-gradient(to bottom, #2ecc71, #27ae60);
+        }
+
+        .losers .stock-item::before {
+            background: linear-gradient(to bottom, #e74c3c, #c0392b);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            margin: 2rem 0;
+            font-weight: 600;
+            position: relative;
+        }
+
+        h1:after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: var(--accent-color);
+            margin: 10px auto;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .stock-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        :root[data-theme="light"] .stock-name {
+            color: #000000 !important;
+        }
+
+        :root[data-theme="dark"] .stock-name {
+            color: #ffffff !important;
+        }
+
+        .stock-change {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: block;
+            margin-top: 0.5rem;
+        }
+
+        .gainers .stock-change {
+            color: #2ecc71;
+        }
+
+        .losers .stock-change {
+            color: #e74c3c;
+        }
+
+        @media (max-width: 768px) {
+            .stocks-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-color);
+            font-style: italic;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .stock-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 30%;
+            height: 3px;
+            background: var(--accent-color);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .stock-item:hover::after {
+            opacity: 1;
+            width: 100%;
+        }
+    </style>
+
+    <h1>Top Performing Stocks</h1>
+    
+    <div class="stocks-container">
+        <div class="stock-section gainers">
+            <h2>Top Gainers</h2>
+            <div id="gainers" class="stock-cards loading">Loading...</div>
+        </div>
+
+        <div class="stock-section losers">
+            <h2>Top Losers</h2>
+            <div id="losers" class="stock-cards loading">Loading...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+fetch('/api/topstocks')
+    .then(res => res.json())
+    .then(data => {
+        if (!data || !data.gainers || !data.losers) {
+            document.getElementById("gainers").innerHTML = '<div class="error">No data available.</div>';
+            document.getElementById("losers").innerHTML = '<div class="error">No data available.</div>';
+            return;
+        }
+
+        const gainers = data.gainers.slice(0, 3);
+        const losers = data.losers.slice(0, 3);
+
+        document.getElementById("gainers").innerHTML = gainers.map(s =>
+            `<div class="stock-item">
+                <span class="stock-name">${s.symbol}</span>
+                <span class="stock-change">${s.percent_change > 0 ? '+' : ''}${s.percent_change}%</span>
+            </div>`
+        ).join('');
+
+        document.getElementById("losers").innerHTML = losers.map(s =>
+            `<div class="stock-item">
+                <span class="stock-name">${s.symbol}</span>
+                <span class="stock-change">${s.percent_change}%</span>
+            </div>`
+        ).join('');
+    })
+    .catch(err => {
+        console.error(err);
+        document.getElementById("gainers").innerHTML = '<div class="error">Error loading data.</div>';
+        document.getElementById("losers").innerHTML = '<div class="error">Error loading data.</div>';
+    });
+</script>
+{% endblock %}

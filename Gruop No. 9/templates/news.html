@@ -1,0 +1,331 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<style>
+    body.news-page {
+        background-image: none !important;
+        background-color: var(--bg-color) !important;
+    }
+
+    /* Override CSS variables for light mode */
+    :root[data-theme="light"] {
+        --text-color: #000000;
+        --card-text: #333333;
+        --card-bg: #ffffff;
+    }
+</style>
+<div class="container mt-4 news-page">
+    <style>
+        .news-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            padding: 1rem;
+            margin-top: 2rem;
+            max-width: 1800px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+            min-height: calc(100vh - 200px);
+            align-items: start;
+            grid-auto-rows: min-content;
+        }
+
+        .container.mt-4 {
+            max-width: 100% !important;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+
+        .news-item {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            padding: 1.5rem;
+            margin-bottom: 0;
+            min-height: 220px;
+        }
+
+        .news-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px var(--hover-shadow);
+        }
+
+        .news-item h3 {
+            font-size: 1.2rem;
+            color: var(--text-color);
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            line-height: 1.4;
+            flex-grow: 1;
+        }
+
+        /* Light mode specific text colors */
+        [data-theme="light"] .news-item {
+            background: #ffffff;
+        }
+
+        [data-theme="light"] .news-item h3 {
+            color: #000000;
+        }
+
+        [data-theme="light"] .news-item p {
+            color: #333333;
+        }
+
+        [data-theme="light"] .loading p {
+            color: #000000;
+        }
+
+        .news-item p {
+            color: var(--card-text);
+            font-size: 1rem;
+            line-height: 1.6;
+            flex-grow: 1;
+            margin-bottom: 1rem;
+        }
+
+        .news-item a {
+            text-decoration: none;
+            color: var(--accent-color);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .news-item a:hover {
+            color: var(--hover-accent);
+            transform: translateX(5px);
+            transition: transform 0.3s ease;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            margin: 1rem 0;
+            padding: 1rem;
+            font-weight: 600;
+            position: relative;
+            background: var(--bg-color);
+        }
+
+        h1:after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: var(--accent-color);
+            margin: 10px auto;
+        }
+
+        @media (max-width: 1600px) {
+            .news-container {
+                grid-template-columns: repeat(2, 1fr);
+                max-width: 1200px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .news-container {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .news-container {
+                grid-template-columns: 1fr;
+                padding: 0.5rem;
+            }
+            
+            .news-item {
+                padding: 1.5rem;
+            }
+        }
+
+        .news-filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--bg-color);
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        .filter-btn:hover, 
+        .filter-btn.active {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-color);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--accent-color);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+
+    <h1>Latest Stock Market News</h1>
+    
+    <div class="news-filters">
+        <button class="filter-btn active" data-category="general">All News</button>
+        <button class="filter-btn" data-category="forex">Forex</button>
+        <button class="filter-btn" data-category="crypto">Crypto</button>
+        <button class="filter-btn" data-category="merger">Mergers</button>
+    </div>
+
+    <div class="news-container" id="news-container">
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading latest news...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const newsContainer = document.getElementById('news-container');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    let currentCategory = 'general';
+
+    // Function to format date
+    function formatDate(timestamp) {
+        const date = new Date(timestamp * 1000);
+        return date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+    }
+
+    // Function to create news item
+    function createNewsItem(news) {
+        const newsItem = document.createElement('div');
+        newsItem.classList.add('news-item');
+        
+        // Create news title
+        const title = document.createElement('h3');
+        title.textContent = news.headline;
+
+        // Create date element
+        const date = document.createElement('p');
+        date.classList.add('news-date');
+        date.textContent = formatDate(news.datetime);
+        date.style.fontSize = '0.9rem';
+        date.style.color = 'var(--text-muted)';
+        date.style.marginBottom = '1rem';
+
+        // Create news link
+        const link = document.createElement('a');
+        link.href = news.url;
+        link.innerHTML = 'Read more <i class="fas fa-arrow-right"></i>';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.classList.add('read-more');
+
+        // Append the elements to the news item
+        newsItem.appendChild(title);
+        newsItem.appendChild(date);
+        newsItem.appendChild(link);
+
+        return newsItem;
+    }
+
+    // Function to fetch news
+    async function fetchNews(category = 'general') {
+        newsContainer.innerHTML = `
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Loading latest news...</p>
+            </div>
+        `;
+
+        try {
+            const response = await fetch(`/api/news?category=${category}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+
+            if (!Array.isArray(data) || data.length === 0) {
+                newsContainer.innerHTML = `
+                    <div class="loading">
+                        <p>No news available for ${category} category.</p>
+                        <p>Please try another category or check back later.</p>
+                    </div>`;
+                return;
+            }
+
+            newsContainer.innerHTML = '';
+            data.slice(0, 30).forEach(news => {  // Limit to 30 news items
+                const newsItem = createNewsItem(news);
+                newsContainer.appendChild(newsItem);
+            });
+        } catch (error) {
+            console.error('Error fetching news:', error);
+            newsContainer.innerHTML = `
+                <div class="loading">
+                    <p>Failed to load news. Please try again later.</p>
+                    <p style="color: var(--error-color); font-size: 0.9rem;">
+                        ${error.message}
+                    </p>
+                </div>`;
+        }
+    }
+
+    // Add click handlers to filter buttons
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const category = button.dataset.category;
+            if (category === currentCategory) return;
+
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            currentCategory = category;
+            fetchNews(category);
+        });
+    });
+
+    // Initial fetch
+    fetchNews();
+</script>
+{% endblock %}

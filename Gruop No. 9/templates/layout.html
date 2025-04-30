@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Stock Market Prediction</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+      :root[data-theme="light"] {
+        --bg-color: #f5f7fa;
+        --text-color: #ffffff;
+        --card-bg: white;
+        --card-text: #ffffff;
+        --nav-bg: #f8f9fa;
+        --nav-text: #000000;
+        --footer-text: #000000;
+        --accent-color: #3498db;
+        --hover-accent: #2980b9;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        --hover-shadow: rgba(0, 0, 0, 0.2);
+      }
+
+      :root[data-theme="dark"] {
+        --bg-color: #1a1a1a;
+        --text-color: #ffffff;
+        --card-bg: #2d2d2d;
+        --card-text: #ffffff;
+        --nav-bg: #2d2d2d;
+        --nav-text: #ffffff;
+        --accent-color: #3498db;
+        --hover-accent: #5dade2;
+      }
+
+      body {
+        background-color: var(--bg-color) !important;
+        color: var(--text-color) !important;
+        transition: all 0.3s ease;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+
+      body[style*="background-image"] {
+        background-image: none !important;
+      }
+
+      .main-content {
+        flex: 1;
+        position: relative;
+        z-index: 1;
+        background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/static/image.jpg');
+        background-size: cover;
+        background-position: center top;
+        background-repeat: no-repeat;
+        min-height: calc(100vh - 60px);
+        display: flex;
+        flex-direction: column;
+        padding-top: 2rem;
+      }
+
+      .main-content .container-fluid {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 2rem 1rem;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .footer {
+        background-color: var(--nav-bg);
+        padding: 2rem 0;
+        width: 100%;
+        position: relative;
+        z-index: 0 !important;
+        margin-top: auto;
+      }
+
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+
+      .footer-section {
+        margin-bottom: 2rem;
+      }
+
+      .footer-section h3 {
+        color: var(--footer-text) !important;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+      }
+
+      .footer-section p {
+        color: var(--footer-text) !important;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .disclaimer {
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--card-text);
+        opacity: 0.8;
+      }
+
+      .navbar {
+        background-color: var(--nav-bg) !important;
+        box-shadow: 0 2px 4px var(--shadow-color);
+        transition: all 0.3s ease;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1030;
+        padding: 0.5rem 1rem;
+      }
+
+      .navbar .container-fluid {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      .navbar-brand {
+        font-weight: 600;
+        font-size: 1.4rem;
+        padding: 0.375rem 0;
+        color: var(--nav-text) !important;
+      }
+
+      .navbar-nav {
+        margin-left: 1rem;
+      }
+
+      .navbar-nav .nav-item {
+        margin: 0 0.25rem;
+      }
+
+      .navbar-nav .nav-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--nav-text) !important;
+        opacity: 0.9;
+        transition: all 0.2s ease;
+      }
+
+      .navbar-nav .nav-link:hover,
+      .navbar-nav .nav-item.active .nav-link {
+        opacity: 1;
+        color: var(--accent-color) !important;
+      }
+
+      .navbar-nav .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0.75rem;
+        right: 0.75rem;
+        height: 2px;
+        background-color: var(--accent-color);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+
+      .navbar-nav .nav-link:hover::after,
+      .navbar-nav .nav-item.active .nav-link::after {
+        transform: scaleX(1);
+      }
+
+      .navbar-toggler {
+        padding: 0.25rem 0.5rem;
+        border: none;
+        background-color: transparent;
+      }
+
+      .navbar-toggler:focus {
+        outline: none;
+        box-shadow: none;
+      }
+
+      .navbar-toggler-icon {
+        width: 1.25em;
+        height: 1.25em;
+      }
+
+      .form-inline {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+      }
+
+      .form-inline .form-control {
+        width: 200px;
+        height: 36px;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.9rem;
+        border-radius: 4px;
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .form-inline .btn {
+        height: 36px;
+        padding: 0.375rem 1rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-left: 0.5rem;
+      }
+
+      .theme-toggle-btn {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        margin-left: 1rem;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .theme-toggle-btn i {
+        font-size: 1.1rem;
+      }
+
+      @media (max-width: 991.98px) {
+        .navbar-collapse {
+          background-color: var(--nav-bg);
+          padding: 1rem;
+          margin: 0.5rem -1rem -0.5rem;
+          border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-nav {
+          margin-left: 0;
+        }
+
+        .navbar-nav .nav-item {
+          margin: 0;
+        }
+
+        .navbar-nav .nav-link {
+          padding: 0.75rem 1rem;
+        }
+
+        .form-inline {
+          margin: 1rem 0;
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .form-inline .form-control {
+          width: calc(100% - 130px);
+        }
+
+        .theme-toggle-btn {
+          margin: 0.5rem 0 0;
+        }
+      }
+
+      .main-content {
+        padding-top: 76px;
+      }
+
+      h1, h2, h3, p {
+        color: var(--text-color) !important;
+        margin-bottom: 1rem;
+      }
+
+      .card, .stock-item {
+        background-color: var(--card-bg) !important;
+        color: var(--card-text) !important;
+      }
+
+      .form-control {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        color: var(--text-color) !important;
+        border-color: var(--accent-color) !important;
+      }
+
+      .form-control::placeholder {
+        color: var(--text-color) !important;
+        opacity: 0.7;
+      }
+
+      .btn-outline-success {
+        color: var(--accent-color) !important;
+        border-color: var(--accent-color) !important;
+      }
+
+      .btn-outline-success:hover {
+        color: white !important;
+        background-color: var(--accent-color) !important;
+      }
+
+      @media (min-width: 768px) {
+        .main-content {
+          padding-top: 3rem;
+        }
+        
+        .main-content .container-fluid {
+          padding: 0 15%;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .navbar {
+          padding: 0.3rem 0.5rem;
+        }
+        
+        .navbar-nav .nav-link {
+          padding: 0.4rem 0.8rem;
+        }
+      }
+
+      .dropdown-menu {
+        background-color: var(--nav-bg);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        box-shadow: 0 2px 4px var(--shadow-color);
+        padding: 0.5rem 0;
+        min-width: 200px;
+        margin-top: 0.5rem;
+      }
+
+      .dropdown-item {
+        color: var(--nav-text);
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+      }
+
+      .dropdown-item:hover,
+      .dropdown-item:focus {
+        background-color: rgba(52, 152, 219, 0.1);
+        color: var(--accent-color);
+      }
+
+      /* Chatbot positioning */
+      #chat-circle {
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        z-index: 9999 !important;
+        background: var(--accent-color) !important;
+        transition: all 0.3s ease;
+      }
+
+      #chat-circle:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .chat-box {
+        position: fixed !important;
+        bottom: 100px !important;
+        right: 20px !important;
+        z-index: 9999 !important;
+        background: var(--card-bg) !important;
+        border-radius: 15px !important;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2) !important;
+      }
+
+      .footer {
+        position: relative;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Stock Market Prediction</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item {% if request.endpoint == 'home' %}active{% endif %}">
+              <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item {% if request.endpoint == 'topstocks' %}active{% endif %}">
+              <a class="nav-link" href="/topstocks">Top Stocks</a>
+            </li>
+            <li class="nav-item {% if request.endpoint == 'news' %}active{% endif %}">
+              <a class="nav-link" href="/news">News</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Sought After Stocks
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="https://www.google.com/finance/quote/MSFT:NASDAQ?hl=en" target="_blank">Microsoft Corporation</a>
+                <a class="dropdown-item" href="https://www.google.com/finance/quote/GOOGL:NASDAQ?hl=en" target="_blank">Google LLC</a>                
+                <a class="dropdown-item" href="https://www.google.com/finance/quote/AMZN:NASDAQ?hl=en" target="_blank">Amazon.com Inc.</a>
+                <a class="dropdown-item" href="https://www.google.com/finance/quote/AAPL:NASDAQ?hl=en" target="_blank">Apple Inc.</a>
+                <a class="dropdown-item" href="https://www.google.com/finance/quote/FB:NASDAQ?hl=en" target="_blank">Facebook Inc.</a>
+              </div>
+            </li>
+          </ul>
+          <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          </form>
+          <button class="theme-toggle-btn" id="theme-toggle">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="main-content">
+      <div class="container-fluid">
+        {% block body %} {% endblock %}
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About Our Project</h3>
+          <p>Our stock price prediction tool uses advanced LSTM (Long Short-Term Memory) networks to forecast the price of a stock for the 8th day based on the previous 7 days' historical data. By leveraging the power of deep learning, we provide accurate predictions with a reliability score based on the accuracy of our model's performance. This trust factor helps users assess the quality of the prediction, ensuring transparency and informed decision-making. Always remember that stock markets are inherently volatile, and predictions should be used as a supplementary tool rather than a sole basis for financial decisions.</p>
+        </div>
+        <div class="footer-section disclaimer">
+          <h3>Disclaimer</h3>
+          <p>The predictions provided by this model are based on historical data and LSTM-based machine learning techniques. Stock prices are subject to market fluctuations and external factors, and predictions are not guaranteed to be accurate. Use the information at your own risk, and always perform your own due diligence before making investment decisions.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script>
+      // Theme toggle functionality
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon = themeToggle.querySelector('i');
+      const html = document.documentElement;
+      
+      // Check for saved theme preference
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      html.setAttribute('data-theme', savedTheme);
+      updateThemeIcon(savedTheme);
+
+      themeToggle.addEventListener('click', () => {
+          const currentTheme = html.getAttribute('data-theme');
+          const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+          
+          html.setAttribute('data-theme', newTheme);
+          localStorage.setItem('theme', newTheme);
+          updateThemeIcon(newTheme);
+      });
+
+      function updateThemeIcon(theme) {
+          themeIcon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+      }
+    </script>
+  </body>
+</html>

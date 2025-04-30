@@ -1,0 +1,23 @@
+{
+    "male": {
+        "0.png": {"fixed_ratio": 1.73684210526, "shirt_ratio_hw": 1.33383915023, "offset_x": 75, "offset_y": 80},
+        "1.png": {"fixed_ratio": 1.5, "shirt_ratio_hw": 1.30331753555, "offset_x": 52, "offset_y": 45},
+        "2.png": {"fixed_ratio": 1.37894736842, "shirt_ratio_hw": 1.32142857143, "offset_x": 44, "offset_y": 48},
+        "3.png": {"fixed_ratio": 1.37894736842, "shirt_ratio_hw": 1.32142857143, "offset_x": 44, "offset_y": 48},
+        "4.png": {"fixed_ratio": 1.37894736842, "shirt_ratio_hw": 1.32142857143, "offset_x": 44, "offset_y": 48},
+        "5.png": {"fixed_ratio": 1.37894736842, "shirt_ratio_hw": 1.32142857143, "offset_x": 44, "offset_y": 48},
+        "6.png": {"fixed_ratio": 1.37894736842, "shirt_ratio_hw": 1.32142857143, "offset_x": 44, "offset_y": 48},
+        "7.png": {"fixed_ratio": 1.37894736842, "shirt_ratio_hw": 1.32142857143, "offset_x": 44, "offset_y": 48},
+        "8.png": {"fixed_ratio": 1.37894736842, "shirt_ratio_hw": 1.32142857143, "offset_x": 44, "offset_y": 48}
+    },
+    "female": {
+        "0.png": {"fixed_ratio": 3.15789473684, "shirt_ratio_hw": 1.625, "offset_x": 260, "offset_y": 32},
+        "1.png": {"fixed_ratio": 3.15789473684, "shirt_ratio_hw": 1.39588100686, "offset_x": 320, "offset_y": 35},
+        "2.png": {"fixed_ratio": 1.65789473684, "shirt_ratio_hw": 1.83012820513, "offset_x": 65, "offset_y": 15},
+        "3.png": {"fixed_ratio": 1.36842105263, "shirt_ratio_hw": 2.85714285714, "offset_x": 41, "offset_y": 45},
+        "4.png": {"fixed_ratio": 2.31578947368, "shirt_ratio_hw": 1.75229357798, "offset_x": 130, "offset_y": 30},
+        "5.png": {"fixed_ratio": 1.97894736842, "shirt_ratio_hw": 1.48727984344, "offset_x": 98, "offset_y": 40},
+        "6.png": {"fixed_ratio": 1.44736842105, "shirt_ratio_hw": 1.82467532468, "offset_x": 55, "offset_y": 18},
+        "7.png": {"fixed_ratio": 1.68421052632, "shirt_ratio_hw": 2.41353383459, "offset_x": 65, "offset_y": 36}
+    }
+}

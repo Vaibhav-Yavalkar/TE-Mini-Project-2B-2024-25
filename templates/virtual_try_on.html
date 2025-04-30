@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FashionSphere - Virtual Try-On</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .virtual-try-on-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff5f7;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 63, 108, 0.1);
+        }
+
+        .try-on-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .try-on-title {
+            flex: 1;
+        }
+
+        .try-on-title h1 {
+            margin: 0;
+            color: #333;
+            font-size: 2rem;
+        }
+
+        .try-on-title .subtitle {
+            margin: 0.5rem 0 0;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .camera-controls {
+            margin-left: 2rem;
+        }
+
+        .camera-btn {
+            background: linear-gradient(135deg, #ff3f6c 0%, #ff6b8b 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 63, 108, 0.2);
+            font-size: 1.1rem;
+        }
+
+        .camera-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 63, 108, 0.3);
+            background: linear-gradient(135deg, #ff6b8b 0%, #ff3f6c 100%);
+        }
+
+        .camera-btn.active {
+            background: linear-gradient(135deg, #dc3545 0%, #ff3f6c 100%);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+        }
+
+        .camera-btn i {
+            font-size: 1.3rem;
+        }
+
+        .try-on-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .camera-feed {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .camera-feed img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .gender-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .gender-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            background: #f0f0f0;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .gender-btn.active {
+            background: linear-gradient(135deg, #ff3f6c 0%, #ff6b8b 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 63, 108, 0.2);
+        }
+
+        .shirt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .shirt-item {
+            cursor: pointer;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .shirt-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .shirt-item img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .shirt-item.selected {
+            border-color: #ff3f6c;
+            background: #fff5f7;
+            box-shadow: 0 4px 15px rgba(255, 63, 108, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .try-on-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .try-on-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .camera-controls {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="logo">FashionSphere</div>
+        <div class="nav-categories">
+            <a href="{{ url_for('index') }}">HOME</a>
+            <a href="#mens">MEN</a>
+            <a href="#womens">WOMEN</a>
+            <a href="#kids">KIDS</a>
+        </div>
+        <div class="nav-icons">
+            <i class="fas fa-user"></i>
+            <i class="fas fa-heart"></i>
+            <i class="fas fa-shopping-bag"></i>
+        </div>
+    </nav>
+
+    <!-- Virtual Try-On Section -->
+    <div class="virtual-try-on-container">
+        <div class="try-on-header">
+            <div class="try-on-title">
+                <h1>Virtual Try-On</h1>
+                <p class="subtitle">Experience clothes virtually before making a purchase</p>
+            </div>
+            <div class="camera-controls">
+                <button class="camera-btn" id="cameraToggle">
+                    <i class="fas fa-camera"></i>
+                    <span>Start Camera</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="try-on-grid">
+            <div class="camera-feed">
+                <img id="videoFeed" src="" alt="Camera Feed">
+            </div>
+
+            <div class="controls">
+                <div class="gender-selector">
+                    <button class="gender-btn active" data-gender="male">Men</button>
+                    <button class="gender-btn" data-gender="female">Women</button>
+                </div>
+
+                <div class="shirt-grid" id="shirtGrid">
+                    <!-- Shirts will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About FashionSphere</h3>
+                <p>Your smart fashion destination with AI-powered shopping experience</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#">About Us</a>
+                <a href="#">Contact</a>
+                <a href="#">Terms & Conditions</a>
+            </div>
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <div class="social-icons">
+                    <i class="fab fa-facebook"></i>
+                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-twitter"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let currentGender = 'male';
+        let currentShirtIndex = 0;
+        let isCameraActive = false;
+
+        // Camera toggle functionality
+        const cameraToggle = document.getElementById('cameraToggle');
+        const videoFeed = document.getElementById('videoFeed');
+
+        cameraToggle.addEventListener('click', () => {
+            isCameraActive = !isCameraActive;
+            cameraToggle.classList.toggle('active');
+            
+            if (isCameraActive) {
+                cameraToggle.innerHTML = '<i class="fas fa-video-slash"></i><span>Stop Camera</span>';
+                updateVideoFeed();
+            } else {
+                cameraToggle.innerHTML = '<i class="fas fa-camera"></i><span>Start Camera</span>';
+                videoFeed.src = '';
+            }
+        });
+
+        // Load shirts for selected gender
+        async function loadShirts(gender) {
+            try {
+                const response = await fetch(`/get_shirts/${gender}`);
+                const shirts = await response.json();
+                
+                const shirtGrid = document.getElementById('shirtGrid');
+                shirtGrid.innerHTML = '';
+                
+                shirts.forEach((shirt, index) => {
+                    const shirtItem = document.createElement('div');
+                    shirtItem.className = 'shirt-item';
+                    shirtItem.innerHTML = `
+                        <img src="/static/${gender}/${shirt.filename}" alt="${shirt.filename}">
+                    `;
+                    shirtItem.addEventListener('click', () => selectShirt(index));
+                    shirtGrid.appendChild(shirtItem);
+                });
+            } catch (error) {
+                console.error('Error loading shirts:', error);
+            }
+        }
+
+        // Select a shirt
+        function selectShirt(index) {
+            currentShirtIndex = index;
+            document.querySelectorAll('.shirt-item').forEach((item, i) => {
+                item.classList.toggle('selected', i === index);
+            });
+            if (isCameraActive) {
+                updateVideoFeed();
+            }
+        }
+
+        // Update video feed
+        function updateVideoFeed() {
+            if (isCameraActive) {
+                videoFeed.src = `/video_feed/${currentShirtIndex}`;
+            }
+        }
+
+        // Gender selection
+        document.querySelectorAll('.gender-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentGender = btn.dataset.gender;
+                loadShirts(currentGender);
+            });
+        });
+
+        // Initial load
+        loadShirts(currentGender);
+    </script>
+</body>
+</html> 

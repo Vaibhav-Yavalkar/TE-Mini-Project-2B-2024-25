@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FashionSphere - Your Smart Fashion Destination</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Chat Bot Button */
+        .chat-bot-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #ff3f6c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 63, 108, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .chat-bot-button i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .chat-bot-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(255, 63, 108, 0.4);
+        }
+
+        .chat-tooltip {
+            position: absolute;
+            right: 75px;
+            background: #333;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .chat-bot-button:hover .chat-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Chat Bot Window */
+        .chat-bot-window {
+            position: fixed;
+            bottom: 80px;
+            right: 30px;
+            width: 500px;
+            height: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+            z-index: 9999;
+            display: none;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .chat-bot-window.active {
+            display: block;
+        }
+
+        .chat-bot-header {
+            background: #ff3f6c;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 10000;
+        }
+
+        .chat-bot-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .chat-bot-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            z-index: 10001;
+        }
+
+        .chat-bot-iframe {
+            width: 100%;
+            height: calc(100% - 50px);
+            border: none;
+            position: relative;
+            z-index: 9999;
+        }
+
+        /* Update navigation z-index */
+        nav {
+            z-index: 1000;
+        }
+
+        @media (max-width: 576px) {
+            .chat-bot-window {
+                width: 100%;
+                height: 100%;
+                bottom: 0;
+                right: 0;
+                border-radius: 0;
+                z-index: 9999;
+            }
+        }
+
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+            padding: 0 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            width: 90px;
+            height: 90px;
+            background: #fff5f7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon i {
+            font-size: 2.2rem;
+            color: #ff3f6c;
+        }
+
+        .feature-card h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .feature-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .card-button {
+            background: linear-gradient(135deg, #ff3f6c 0%, #ff6b8b 100%);
+            color: white;
+            padding: 0.9rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 63, 108, 0.2);
+        }
+
+        .card-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 63, 108, 0.3);
+            background: linear-gradient(135deg, #ff6b8b 0%, #ff3f6c 100%);
+        }
+
+        @media (max-width: 768px) {
+            .feature-cards {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+            
+            .feature-card {
+                padding: 2rem;
+            }
+        }
+
+        /* Add these styles to your existing CSS */
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-name {
+            color: #333;
+            font-weight: 500;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .logout-btn {
+            color: #ff3f6c;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: #fff5f7;
+            text-decoration: none;
+        }
+        
+        .fa-user {
+            color: #ff3f6c;
+            font-size: 1.2rem;
+        }
+
+        /* Update navigation styles */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.3rem 1.5rem;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 55px;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #ff3f6c;
+            margin-right: 1.5rem;
+        }
+
+        .nav-categories {
+            display: flex;
+            gap: 1.2rem;
+            margin-right: 1.5rem;
+        }
+
+        .nav-categories a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-categories a:hover {
+            color: #ff3f6c;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 450px;
+            margin: 0 1.5rem;
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-bar {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.4rem 0.8rem;
+            border: 1px solid #ff3f6c;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            background-color: white;
+            height: 35px;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #ff3f6c;
+            box-shadow: 0 0 0 2px rgba(255, 63, 108, 0.2);
+            background-color: white;
+        }
+
+        /* Add styles for datalist */
+        .search-bar datalist {
+            max-height: 30px;
+            overflow-y: auto;
+            position: absolute;
+            width: 100%;
+            background: white;
+            border: 1px solid #ff3f6c;
+            border-radius: 0 0 20px 20px;
+            margin-top: -1px;
+            z-index: 1001;
+        }
+
+        .search-bar option {
+            padding: 0.05rem 0.4rem;
+            font-size: 0.85rem;
+            line-height: 1;
+            height: 12px;
+            display: block;
+        }
+
+        .search-buttons {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .search-btn, .image-search-btn {
+            background: none;
+            border: none;
+            color: #ff3f6c;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 0.4rem;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-btn:hover, .image-search-btn:hover {
+            background: #fff5f7;
+            color: #ff3f6c;
+            transform: scale(1.1);
+        }
+
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .user-name {
+            color: #333;
+            font-weight: 500;
+            max-width: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 0.85rem;
+        }
+
+        .logout-btn {
+            color: #ff3f6c;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.25rem 0.6rem;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .logout-btn:hover {
+            background: #fff5f7;
+            text-decoration: none;
+        }
+
+        .fa-user {
+            color: #ff3f6c;
+            font-size: 1rem;
+        }
+
+        /* Add margin to main content to account for fixed nav */
+        body {
+            padding-top: 55px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="logo">FashionSphere</div>
+        <div class="nav-categories">
+            <a href="{{ url_for('index') }}">HOME</a>
+            <a href="#mens">MEN</a>
+            <a href="#womens">WOMEN</a>
+            <a href="#kids">KIDS</a>
+        </div>
+        <div class="search-container">
+            <form action="{{ url_for('search') }}" method="POST" class="search-form">
+                <div class="search-bar">
+                    <input type="text" name="query" id="search-input" placeholder="Search for products..." list="fashion-items" autocomplete="off">
+                    <datalist id="fashion-items">
+                        {% for item in fashion_items %}
+                        <option value="{{ item }}">
+                        {% endfor %}
+                    </datalist>
+                </div>
+                <div class="search-buttons">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <a href="{{ url_for('image_search') }}" class="image-search-btn">
+                        <i class="fas fa-camera"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+        <div class="nav-icons">
+            <div class="user-section">
+                <i class="fas fa-user"></i>
+                <span class="user-name">{{ session.get('user_name', '') }}</span>
+                <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Banner -->
+    <div class="main-banner">
+        <img src="{{ url_for('static', filename='images/fashion.png') }}" alt="FashionSphere">
+    </div>
+
+    <!-- Smart Features Section -->
+    <section class="features">
+        <h2>Smart Shopping Features</h2>
+        <div class="feature-cards">
+            <div class="feature-card">
+                <div class="card-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <h3>Virtual Try-On</h3>
+                <p>Try clothes virtually before making a purchase</p>
+                <a href="{{ url_for('virtual_try_on_page') }}" class="card-button">Try Now</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="card-icon">
+                    <i class="fas fa-ruler"></i>
+                </div>
+                <h3>Body Size Measurement</h3>
+                <p>Get accurate body measurements using AI</p>
+                <a href="{{ url_for('body_size') }}" class="card-button">Measure Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fashion Quotes Section -->
+    <section class="fashion-quotes">
+        <div class="quote-container">
+            <h2>Fashion is About Expression</h2>
+            <p>Fashion is the armor to survive the reality of everyday life. It's not about brands, labels, or price tags. It's about style, comfort, and most importantly, confidence.</p>
+            <p>At FashionSphere, we believe in making fashion accessible, sustainable, and personalized for everyone. Our AI-powered features help you discover your unique style and make informed fashion choices.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About FashionSphere</h3>
+                <p>Your smart fashion destination with AI-powered shopping experience</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#">About Us</a>
+                <a href="#">Contact</a>
+                <a href="#">Terms & Conditions</a>
+            </div>
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <div class="social-icons">
+                    <i class="fab fa-facebook"></i>
+                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-twitter"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chat Bot Button -->
+    <div class="chat-bot-button" id="chatBotButton">
+        <i class="fas fa-robot"></i>
+        <span class="chat-tooltip">Chat with AI Assistant</span>
+    </div>
+
+    <!-- Chat Bot Window -->
+    <div class="chat-bot-window" id="chatBotWindow">
+        <div class="chat-bot-header">
+            <h3>Fashion Assistant</h3>
+            <button class="chat-bot-close" id="chatBotClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <iframe class="chat-bot-iframe" id="chatBotIframe" src=""></iframe>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // Chat Bot Functionality
+        const chatBotButton = document.getElementById('chatBotButton');
+        const chatBotWindow = document.getElementById('chatBotWindow');
+        const chatBotClose = document.getElementById('chatBotClose');
+        const chatBotIframe = document.getElementById('chatBotIframe');
+        let isChatBotOpen = false;
+
+        chatBotButton.addEventListener('click', () => {
+            if (!isChatBotOpen) {
+                // Start the Streamlit server if not already running
+                fetch('/start_chatbot')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            chatBotIframe.src = data.url;
+                            chatBotWindow.classList.add('active');
+                            isChatBotOpen = true;
+                            // Add event listener for iframe load
+                            chatBotIframe.onload = function() {
+                                // Ensure iframe is focused and interactive
+                                chatBotIframe.style.pointerEvents = 'auto';
+                                chatBotIframe.style.opacity = '1';
+                            };
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error starting chatbot:', error);
+                        alert('Error starting chatbot. Please try again.');
+                    });
+            } else {
+                chatBotWindow.classList.remove('active');
+                isChatBotOpen = false;
+            }
+        });
+
+        chatBotClose.addEventListener('click', () => {
+            chatBotWindow.classList.remove('active');
+            isChatBotOpen = false;
+        });
+
+        // Prevent navigation from overlapping with chatbot
+        document.addEventListener('DOMContentLoaded', function() {
+            const nav = document.querySelector('nav');
+            if (nav) {
+                nav.style.zIndex = '1000';
+            }
+        });
+    </script>
+</body>
+</html> 

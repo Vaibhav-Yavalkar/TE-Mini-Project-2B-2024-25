@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sentiment Analysis - WanderWise</title>
+    <!-- <link rel="stylesheet" href="../static/css/styles.css" /> -->
+    <link rel="stylesheet" href="../static/css/analysis.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav>
+      <div class="logo">
+        <a href="{{ url_for('dashboard') }}" style="text-decoration: none; color: inherit;">WanderWise</a>
+    </div>
+      <ul class="nav-links">
+        <li>
+          <a href="{{ url_for('recommend') }}">Personalized Recommendations</a>
+        </li>
+        <li><a href="{{ url_for('popularity') }}">Popularity Prediction</a></li>
+        <li><a href="{{ url_for('analysis') }}">Sentiment Analysis</a></li>
+        <li>
+          <a href="{{ url_for('dynamic_route') }}">Dynamic Route</a>
+        </li>
+      </ul>
+      <div class="user-menu">
+        <img
+          src="../static/images/profile-user.png"
+          alt="User"
+          class="user-icon"
+          onclick="toggleUserMenu()"
+        />
+        <div class="user-dropdown" id="user-dropdown">
+          <a href="{{ url_for('profile') }}">View Profile</a>
+          <a href="{{ url_for('help_us') }}">Help ?</a>
+          <a href="{{ url_for('logout') }}" onclick="logout()">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="wrapper">
+      <div class="content">
+        <div class="container">
+          <!-- Form for Year Input -->
+          <form method="POST" action="/analysis">
+            <label for="year"><strong>Unlock Insights:</strong> Select a Year to Discover Sentiment Trends</label>
+            <select name="year" required>
+                <option value="" disabled selected>📅 Pick a Year (2018 - 2023)</option>
+                {% for y in range(2018, 2024) %}
+                    <option value="{{ y }}" {% if year and year == y %}selected{% endif %}>📊 {{ y }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">🔍 Analyze Now</button>
+        </form>
+        
+  
+          {% if year %}
+  <h2>Sentiment Analysis for {{ year }}</h2>
+  
+  {% if pie_chart_path %}
+    <h3>Overall Sentiment Distribution</h3>
+    <img src="{{ pie_chart_path }}" alt="Sentiment Pie Chart" />
+  {% endif %}
+  
+  {% if line_chart_path %}
+    <h3>Monthly Sentiment Trend</h3>
+    <img src="{{ line_chart_path }}" alt="Sentiment Line Graph" />
+  {% endif %}
+{% endif %}
+
+{% if yearly_bar_chart_path %}
+  <h2>***Yearly Sentiment Comparison***</h2>
+  <img src="{{ yearly_bar_chart_path }}" alt="Yearly Sentiment Bar Chart" />
+  
+  {% if yearly_counts %}
+  <h3 class="section-title">📊 Yearly Sentiment Counts</h3>
+  <div class="yearly-sentiment-container">
+    {% for year_val, counts in yearly_counts.items() %}
+      <div class="year-card">
+        <h4>📅 {{ year_val }}</h4>
+        <p><span class="good">😃 Good:</span> {{ counts.Good }}</p>
+        <p><span class="average">😐 Average:</span> {{ counts.Average }}</p>
+        <p><span class="bad">😡 Bad:</span> {{ counts.Bad }}</p>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endif %}
+
+        </div>
+      </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 WanderWise. All Rights Reserved.</p>
+      <p>Contact Us: wanderwise.1010@gmail.com</p>
+    </footer>
+    <script>
+      function toggleUserMenu() {
+        const userDropdown = document.getElementById("user-dropdown");
+        userDropdown.classList.toggle("show");
+      }
+
+      function logout() {
+        window.location.href = "{{ url_for('logout') }}";
+      }
+
+      // Close the dropdown if the user clicks outside of it
+      window.onclick = function (event) {
+        if (!event.target.matches(".user-icon")) {
+          const dropdowns = document.getElementsByClassName("user-dropdown");
+          for (let i = 0; i < dropdowns.length; i++) {
+            const openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains("show")) {
+              openDropdown.classList.remove("show");
+            }
+          }
+        }
+      };
+    </script>
+  </body>
+</html>

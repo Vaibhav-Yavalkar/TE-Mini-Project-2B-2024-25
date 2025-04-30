@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | WanderWise</title>
+    <link rel="stylesheet" href="../static/css/login.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <!-- Left Side - Image -->
+      <div class="login-left">
+        <img src="../static/images/restro.avif" alt="Travel Image" />
+      </div>
+
+      <!-- Right Side - Login & Sign-Up -->
+<div class="login-right">
+  <div class="form-container">
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+              <div class="flash-messages">
+                  {% for category, message in messages %}
+                      <p class="{{ category }}">{{ message }}</p>
+                  {% endfor %}
+              </div>
+          {% endif %}
+      {% endwith %}
+
+      <!-- Login Form -->
+      <div id="login-form">
+          <h2>Welcome to WanderWise</h2>
+          <p>Login to explore the best places!</p>
+          <form id="loginForm" method="POST" action="{{ url_for('login') }}">
+              <label for="username">Username:</label>
+              <input type="text" name="username" id="username" placeholder="Enter your username" required />
+
+              <label for="password">Password:</label>
+              <input type="password" name="password" id="password" placeholder="Enter your password" required />
+
+              <button type="submit">Login</button>
+          </form>
+
+          <p>Don't have an account? <a href="#" onclick="toggleForm()">Sign Up</a></p>
+      </div>
+
+      <!-- Sign-Up Form -->
+      <div id="signup-form" class="hidden">
+          <h2>Create an Account</h2>
+          <p>Sign up to discover new places!</p>
+          <form id="signupForm" method="POST" action="{{ url_for('signup') }}">
+              <label for="signup-name">Name:</label>
+              <input type="text" name="signup-name" id="signup-name" placeholder="Enter your name" required />
+
+              <label for="signup-email">Email:</label>
+              <input type="email" name="signup-email" id="signup-email" placeholder="Enter your email" required />
+
+              <label for="signup-password">Password:</label>
+              <input type="password" name="signup-password" id="signup-password" placeholder="Create a password" required />
+
+              <button type="submit">Sign Up</button>
+          </form>
+
+          <p>Already have an account? <a href="#" onclick="toggleForm()">Login</a></p>
+      </div>
+  </div>
+</div>
+
+
+    <script src="../static/js/login.js"></script>
+  </body>
+</html>

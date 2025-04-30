@@ -1,0 +1,245 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  background-color: #f4f4f4;
+}
+
+/* Navbar */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #3e2723; /* Darker Brown */
+  padding: 15px 40px;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* WanderWise Font */
+.logo {
+  font-family: "Pacifico", cursive;
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 10px 15px;
+  background-color: transparent;
+  border-radius: 5px;
+  transition: 0.3s ease;
+}
+
+.nav-links a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* User Menu */
+.user-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.user-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.user-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Dropdown */
+.user-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 50px;
+  background-color: #000;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  border-radius: 8px;
+}
+
+.user-dropdown a {
+  color: #fff;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.user-dropdown a:hover {
+  background-color: #f1f1f1;
+  color: #000;
+}
+
+.user-dropdown.show {
+  display: block;
+  opacity: 1;
+}
+
+/* Background Styling */
+.recommendation-bg {
+  background: url("../images/pr.avif") center/cover no-repeat fixed;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Form Container Styling */
+.recommendation-container {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+.recommendation-container h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.recommendation-container p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Form Styling */
+#recommendation-form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bold;
+  margin: 10px 0 5px;
+  text-align: left;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+button {
+  background-color: #ff5733;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+button:hover {
+  background-color: #d84315;
+}
+
+/* Recommendations Section */
+.recommendation-results {
+  margin-top: 40px;
+  text-align: center;
+  max-width: 1100px;
+  width: 100%;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-results h2 {
+  font-size: 22px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Recommendations List */
+#recommendation-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(220px, 1fr)
+  ); /* 4 items per row */
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Recommendation Card */
+#recommendation-list li {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s;
+}
+
+#recommendation-list li:hover {
+  transform: scale(1.05);
+}
+
+/* Restaurant Image */
+#recommendation-list img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Text Styling */
+#recommendation-list p {
+  font-size: 16px;
+  color: #333;
+  margin: 5px 0;
+}
+
+#recommendation-list a {
+  text-decoration: none;
+  color: inherit;
+  display: block; /* Makes the whole area clickable */
+  height: 100%;
+}
+
+/* Footer */
+footer {
+  background: #3e2723;
+  color: white;
+  padding: 15px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: auto;
+}

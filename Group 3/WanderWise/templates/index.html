@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WanderWise</title>
+    <link rel="stylesheet" href="../static/css/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav>
+      <div class="logo">WanderWise</div>
+      <ul class="nav-links">
+        <li>
+          <a href="{{ url_for('login') }}">Personalized Recommendations</a>
+        </li>
+        <li><a href="{{ url_for('login') }}">Popularity Prediction</a></li>
+        <li><a href="{{ url_for('login') }}">Sentiment Analysis</a></li>
+        <li><a href="{{ url_for('login') }}">Dynamic Route</a></li>
+      </ul>
+      <a href="{{ url_for('login') }}" class="login-btn">Login/SignUp</a>
+    </nav>
+
+    <!-- Background Image Slider -->
+    <div class="background">
+      <div class="slideshow">
+        <img src="../static/images/food3.jpg" alt="Image 1" />
+        <img src="../static/images/food1.jpg" alt="Image 2" />
+        <img src="../static/images/food2.jpg" alt="Image 3" />
+      </div>
+
+      <!-- Get Started Button -->
+      <div class="get-started-container">
+        <h1>WanderWise</h1>
+        <p>Your AI-Powered Travel Companion</p>
+        <a href="{{ url_for('login') }}" class="get-started-btn">Get Started</a>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <section class="features">
+      <div class="card">
+        <img
+          src="../static/images/food1.jpg"
+          alt="Personalized Recommendations"
+        />
+        <h3>Personalized Recommendations</h3>
+        <p>Get customized suggestions based on your preferences.</p>
+      </div>
+      <div class="card">
+        <img src="../static/images/food2.jpg" alt="Popularity Prediction" />
+        <h3>Popularity Prediction</h3>
+        <p>Know which places are trending.</p>
+      </div>
+      <div class="card">
+        <img src="../static/images/food3.jpg" alt="Sentiment Analysis" />
+        <h3>Sentiment Analysis</h3>
+        <p>Analyze user reviews to find the best-rated spots.</p>
+      </div>
+      <div class="card">
+        <img src="../static/images/food4.png" alt="Dynamic Route" />
+        <h3>Dynamic Route Planner</h3>
+        <p>Plan efficient routes based on your itinerary.</p>
+      </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section class="about-container">
+      <div class="about-text">
+        <h2>About Us</h2>
+        <p>
+          Welcome to <strong>WanderWise</strong>—your smart travel assistant
+          powered by AI!
+        </p>
+      </div>
+      <div class="about-image">
+        <img src="../static/images/about.jpg" alt="About Us Image" />
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 WanderWise. All Rights Reserved.</p>
+      <p>Contact Us: wanderwise.1010@gmail.com</p>
+    </footer>
+
+    <script src="../static/js/script.js"></script>
+  </body>
+</html>
+

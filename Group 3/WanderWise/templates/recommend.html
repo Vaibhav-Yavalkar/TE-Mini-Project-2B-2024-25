@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personalized Recommendations - WanderWise</title>
+    <!-- <link rel="stylesheet" href="../static/css/styles.css" /> -->
+    <link rel="stylesheet" href="../static/css/recommend.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav>
+      <div class="logo">
+        <a
+          href="{{ url_for('dashboard') }}"
+          style="text-decoration: none; color: inherit"
+          >WanderWise</a
+        >
+      </div>
+      <ul class="nav-links">
+        <li>
+          <a href="{{ url_for('recommend') }}">Personalized Recommendations</a>
+        </li>
+        <li><a href="{{ url_for('popularity') }}">Popularity Prediction</a></li>
+        <li><a href="{{ url_for('analysis') }}">Sentiment Analysis</a></li>
+        <li>
+          <a href="{{ url_for('dynamic_route') }}">Dynamic Route</a>
+        </li>
+      </ul>
+      <div class="user-menu">
+        <img
+          src="../static/images/profile-user.png"
+          alt="User"
+          class="user-icon"
+          onclick="toggleUserMenu()"
+        />
+        <div class="user-dropdown" id="user-dropdown">
+          <a href="{{ url_for('profile') }}">View Profile</a>
+          <a href="{{ url_for('help_us') }}">Help ?</a>
+          <a href="{{ url_for('logout') }}" onclick="logout()">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="recommendation-bg">
+      <!-- Recommendation Form Container -->
+      <div class="recommendation-container">
+        <h2>Find Your Perfect Dining Spot</h2>
+        <p>Choose your preferences and get the best recommendations.</p>
+
+        <form id="recommendation-form" method="POST" action="/recommend">
+          <!-- Food Type Dropdown -->
+          <label for="food_type">Select Food Type:</label>
+          <select name="food_type" id="food_type" required>
+            <option value="" disabled selected>Select Food Type</option>
+            <option value="Chinese">Chinese</option>
+            <option value="North Indian">North Indian</option>
+            <option value="Indian">Indian</option>
+            <option value="Fast Food">Fast Food</option>
+            <option value="Beverages">Beverages</option>
+            <option value="Desserts">Desserts</option>
+            <option value="Biryani">Biryani</option>
+            <option value="Snacks">Snacks</option>
+            <option value="South Indian">South Indian</option>
+            <option value="Continental">Continental</option>
+          </select>
+
+          <!-- Price Input -->
+          <label for="price">Enter Price Range (₹0 - ₹2500):</label>
+          <input
+            type="number"
+            name="price"
+            id="price"
+            min="0"
+            max="2500"
+            placeholder="Enter price range"
+            required
+          />
+
+          <!-- Rating Input -->
+          <label for="avg_ratings">Enter Average Ratings (2.0 - 5.0):</label>
+          <input
+            type="number"
+            name="avg_ratings"
+            id="avg_ratings"
+            step="0.1"
+            min="2.0"
+            max="5.0"
+            placeholder="Enter average ratings"
+            required
+          />
+
+          <!-- Location Input -->
+          <label for="location">Enter Location (City/Area):</label>
+          <input
+            type="text"
+            name="location"
+            id="location"
+            placeholder="Enter location (City/Area)"
+            required
+          />
+
+          <!-- Submit Button -->
+          <button type="submit">Get Recommendations</button>
+        </form>
+      </div>
+
+      <!-- Recommendations Section -->
+      <div class="recommendation-results">
+        <h2>Best Recommendations</h2>
+
+        {% if recommendations %}
+        <ul id="recommendation-list">
+          {% for restaurant in recommendations %}
+          <li>
+            <a
+              href="{{ url_for('dynamic_route') }}?destination={{ restaurant.name | urlencode }}"
+            >
+              <img src="{{ restaurant.image }}" alt="Restaurant Image" />
+              <p><strong>Name:</strong> {{ restaurant.name }}</p>
+              <p><strong>📍Address:</strong> {{ restaurant.address }}</p>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>No recommendations available.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 WanderWise. All Rights Reserved.</p>
+      <p>Contact Us: wanderwise.1010@gmail.com</p>
+    </footer>
+
+    <script>
+      function toggleUserMenu() {
+        const userDropdown = document.getElementById("user-dropdown");
+        userDropdown.classList.toggle("show");
+      }
+
+      function logout() {
+        window.location.href = "{{ url_for('logout') }}";
+      }
+
+      // Close the dropdown if the user clicks outside of it
+      window.onclick = function (event) {
+        if (!event.target.matches(".user-icon")) {
+          const dropdowns = document.getElementsByClassName("user-dropdown");
+          for (let i = 0; i < dropdowns.length; i++) {
+            const openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains("show")) {
+              openDropdown.classList.remove("show");
+            }
+          }
+        }
+      };
+    </script>
+  </body>
+</html>

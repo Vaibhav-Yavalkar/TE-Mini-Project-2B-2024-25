@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Help Us - WanderWise</title>
+    <!-- <link rel="stylesheet" href="../static/css/styles.css" /> -->
+    <link rel="stylesheet" href="../static/css/help.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav>
+      <div class="logo">
+        <a
+          href="{{ url_for('dashboard') }}"
+          style="text-decoration: none; color: inherit"
+          >WanderWise</a
+        >
+      </div>
+      <ul class="nav-links">
+        <li>
+          <a href="{{ url_for('recommend') }}">Personalized Recommendations</a>
+        </li>
+        <li><a href="{{ url_for('popularity') }}">Popularity Prediction</a></li>
+        <li><a href="{{ url_for('analysis') }}">Sentiment Analysis</a></li>
+        <li>
+          <a href="{{ url_for('dynamic_route') }}">Dynamic Route Planner</a>
+        </li>
+      </ul>
+      <div class="user-menu">
+        <img
+          src="../static/images/profile-user.png"
+          alt="User"
+          class="user-icon"
+          onclick="toggleUserMenu()"
+        />
+        <div class="user-dropdown" id="user-dropdown">
+          <a href="{{ url_for('profile') }}">View Profile</a>
+          <a href="{{ url_for('help_us') }}">Help ?</a>
+          <a href="{{ url_for('logout') }}" onclick="logout()">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <section id="help">
+      <div class="container">
+        <h2>Need Help?</h2>
+        <div class="contact-info">
+          <p>If you have any questions, feel free to reach out to us:</p>
+          <p><strong>Phone:</strong> +91 9475774598</p>
+          <!-- Replace with your contact number -->
+        </div>
+
+        <h3
+          style="
+            color: white;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 20px;
+          "
+        >
+          Contact Us
+        </h3>
+
+        <form
+          id="helpForm"
+          action="https://api.web3forms.com/submit"
+          method="POST"
+        >
+          <input type="hidden" name="access_key" value="your_access_key_here" />
+          <label for="name">Name:</label>
+          <input
+            type="text"
+            placeholder="Enter your name"
+            id="name"
+            name="name"
+            required
+          />
+
+          <label for="email">Email:</label>
+          <input
+            type="email"
+            placeholder="Enter your email"
+            id="email"
+            name="email"
+            required
+          />
+
+          <label for="message">Message:</label>
+          <textarea
+            id="message"
+            placeholder="Type your message..."
+            name="message"
+            required
+          ></textarea>
+
+          <button type="submit">Send Message</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 WanderWise. All Rights Reserved.</p>
+      <p>Contact Us: wanderwise.1010@gmail.com</p>
+    </footer>
+
+    <script>
+      function toggleUserMenu() {
+        const userDropdown = document.getElementById("user-dropdown");
+        userDropdown.classList.toggle("show");
+      }
+
+      function logout() {
+        window.location.href = "{{ url_for('logout') }}";
+      }
+
+      // Close the dropdown if the user clicks outside of it
+      window.onclick = function (event) {
+        if (!event.target.matches(".user-icon")) {
+          const dropdowns = document.getElementsByClassName("user-dropdown");
+          for (let i = 0; i < dropdowns.length; i++) {
+            const openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains("show")) {
+              openDropdown.classList.remove("show");
+            }
+          }
+        }
+      };
+    </script>
+  </body>
+</html>

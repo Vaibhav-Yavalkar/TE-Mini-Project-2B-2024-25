@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Popularity - WanderWise</title>
+    <link rel="stylesheet" href="../static/css/styles.css" />
+    <link rel="stylesheet" href="../static/css/popularity.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav>
+      <div class="logo">
+        <a
+          href="{{ url_for('dashboard') }}"
+          style="text-decoration: none; color: inherit"
+          >WanderWise</a
+        >
+      </div>
+      <ul class="nav-links">
+        <li>
+          <a href="{{ url_for('recommend') }}">Personalized Recommendations</a>
+        </li>
+        <li><a href="{{ url_for('popularity') }}">Popularity Prediction</a></li>
+        <li><a href="{{ url_for('analysis') }}">Sentiment Analysis</a></li>
+        <li>
+          <a href="{{ url_for('dynamic_route') }}">Dynamic Route</a>
+        </li>
+      </ul>
+      <div class="user-menu">
+        <img
+          src="../static/images/profile-user.png"
+          alt="User"
+          class="user-icon"
+          onclick="toggleUserMenu()"
+        />
+        <div class="user-dropdown" id="user-dropdown">
+          <a href="{{ url_for('profile') }}">View Profile</a>
+          <a href="{{ url_for('help_us') }}">Help ?</a>
+          <a href="{{ url_for('logout') }}" onclick="logout()">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Background Section -->
+    <div class="popularity-bg">
+      <div class="popularity-container">
+        <h2>Check the Popularity</h2>
+
+        <!-- Form for User Selection -->
+        <h1>Predict Restaurant Popularity</h1>
+        <form action="/popularity" method="POST">
+          <div class="form-group">
+            <label for="city">Select City:</label>
+            <select id="city" name="city" required onchange="updateAreas()">
+              <option value="">-- Select City --</option>
+              <option value="Ahmedabad">Ahmedabad</option>
+              <option value="Bangalore">Bangalore</option>
+              <option value="Chennai">Chennai</option>
+              <option value="Delhi">Delhi</option>
+              <option value="Hyderabad">Hyderabad</option>
+              <option value="Kolkata">Kolkata</option>
+              <option value="Mumbai">Mumbai</option>
+              <option value="Pune">Pune</option>
+              <option value="Surat">Surat</option>
+            </select>
+
+            <label for="area">Select Area:</label>
+            <select id="area" name="area" required>
+              <option value="">-- Select Area --</option>
+            </select>
+
+            <label for="food_type">Enter Food Type:</label>
+
+            <select name="food_type" id="food_type" required>
+              <option value="" disabled selected>Select Food Type</option>
+              <option value="Chinese">Chinese</option>
+              <option value="North Indian">North Indian</option>
+              <option value="Indian">Indian</option>
+              <option value="Fast Food">Fast Food</option>
+              <option value="Beverages">Beverages</option>
+              <option value="Desserts">Desserts</option>
+              <option value="Biryani">Biryani</option>
+              <option value="Snacks">Snacks</option>
+              <option value="South Indian">South Indian</option>
+              <option value="Continental">Continental</option>
+            </select>
+          </div>
+          <button type="submit">Predict Popularity</button>
+        </form>
+      </div>
+
+      {% if top_restaurants %}
+      <div class="result">
+        <h2>Top 3 Restaurants</h2>
+
+        <div class="restaurant-list">
+          {% for restaurant, score, address in top_restaurants %}
+          <a
+            href="{{ url_for('dynamic_route') }}?destination={{ restaurant | urlencode }}"
+            style="text-decoration: none; color: inherit"
+          >
+            <div class="restaurant-card">
+              <img
+                src="{{ url_for('static', filename='images/rest' ~ loop.index ~ '.jpg') }}"
+                alt="Restaurant Image"
+                class="restaurant-img"
+              />
+
+              <div class="restaurant-info">
+                <h3>{{ restaurant }}</h3>
+                <p>⭐ Popularity Score: <strong>{{ score }}</strong> / 10</p>
+                <p>📍 <em>{{ address }}</em></p>
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 WanderWise. All Rights Reserved.</p>
+      <p>Contact Us: wanderwise.1010@gmail.com</p>
+    </footer>
+    <script>
+      function toggleUserMenu() {
+        const userDropdown = document.getElementById("user-dropdown");
+        userDropdown.classList.toggle("show");
+      }
+
+      function logout() {
+        window.location.href = "{{ url_for('logout') }}";
+      }
+
+      // Close the dropdown if the user clicks outside of it
+      window.onclick = function (event) {
+        if (!event.target.matches(".user-icon")) {
+          const dropdowns = document.getElementsByClassName("user-dropdown");
+          for (let i = 0; i < dropdowns.length; i++) {
+            const openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains("show")) {
+              openDropdown.classList.remove("show");
+            }
+          }
+        }
+      };
+    </script>
+
+    <script>
+      const cityAreas = {
+        Ahmedabad: [
+          "Navrangpura",
+          "Vastrapur",
+          "Ellisbridge",
+          "Maninagar",
+          "Naranpura",
+        ],
+        Bangalore: [
+          "Indiranagar",
+          "Koramangala",
+          "Ashok Nagar",
+          "Central Bangalore",
+          "Basavanagudi",
+        ],
+        Chennai: [
+          "Perambur",
+          "Anna Nagar",
+          "Kilpauk",
+          "Egmore",
+          "Nungambakkam",
+        ],
+        Delhi: [
+          "Rohini",
+          "Paschim Vihar",
+          "Pitam Pura",
+          "Sector 7 Rohini",
+          "Tagore Garden Extension",
+        ],
+        Hyderabad: [
+          "Banjara Hills",
+          "Himayath Nagar",
+          "Kothapet & Dilsukhnagar",
+          "Himayatnagar",
+          "Nallakunta & Vidyanagar",
+        ],
+        Kolkata: [
+          "Bidhannagar",
+          "Salt Lake",
+          "Lake Town",
+          "Ballygunge",
+          "Bhowanipore",
+        ],
+        Mumbai: ["Chembur", "Andheri East", "Kurla", "Santacruz East", "Powai"],
+        Pune: [
+          "Kothrud",
+          "Shivajinagar",
+          "Koregaon Park",
+          "Kondhwa",
+          "Shivaji Nagar",
+        ],
+        Surat: ["Athwa", "Adajan", "Piplod", "Varachha", "Vesu"],
+      };
+
+      function updateAreas() {
+        const citySelect = document.getElementById("city");
+        const areaSelect = document.getElementById("area");
+        const selectedCity = citySelect.value;
+
+        areaSelect.innerHTML = '<option value="">-- Select Area --</option>';
+
+        if (selectedCity in cityAreas) {
+          cityAreas[selectedCity].forEach((area) => {
+            const option = document.createElement("option");
+            option.value = area;
+            option.textContent = area;
+            areaSelect.appendChild(option);
+          });
+        }
+      }
+    </script>
+  </body>
+</html>

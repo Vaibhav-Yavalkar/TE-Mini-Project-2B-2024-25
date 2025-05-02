@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="../static/css/weather.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <i class="cloud-logo" data-lucide="cloud"></i>
+                <span class="large-letter">W</span>eather <span class="large-letter">D</span>ata
+            </div>
+            <div class="search-container">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Search for a city...">
+                <div id="suggestions" class="suggestions"></div>
+            </div>
+            <button class="location-btn" id="locationBtn">
+                <i data-lucide="map-pin"></i>
+                Current Location
+            </button>
+        </header>
+
+        <main>
+            <!-- Temperature Unit Selection -->
+            <div class="temp-unit-selection">
+                <label>
+                    <input type="radio" name="temp-unit" value="C" checked> Celsius
+                </label>
+                <label>
+                    <input type="radio" name="temp-unit" value="F"> Fahrenheit
+                </label>
+            </div>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-spinner hidden">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message hidden"></div>
+
+        <div class="grid-container">
+            <!-- Current Weather -->
+            <div class="weather-card">
+                <div class="current-weather">
+                    <h2 id="temperature" class="temperature">--°C</h2>
+                    <div id="currentWeatherIcon"></div> <!-- Placeholder for weather icon -->
+                    <p id="weatherDescription" class="weather-desc">--</p>
+                    <div class="weather-info">
+                        <span id="date">--</span>
+                        <span class="dot">•</span>
+                        <span id="location">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weather Details -->
+            <div class="details-card">
+                <h3>Today's Highlights</h3>
+                <div class="highlights-grid">
+                    <div class="highlight-item">
+                        <p class="label">Feels Like</p>
+                        <div class="value">
+                            <i class="heat" data-lucide="thermometer"></i>
+                            <span id="feelsLike" class="temperature">--°C</span>
+                        </div>
+                    </div>
+
+                    <div class="highlight-item">
+                        <p class="label">Humidity</p>
+                        <div class="value">
+                            <i class="drop" data-lucide="droplets"></i>
+                            <span id="humidity">--%</span>
+                        </div>
+                    </div>
+
+                    <div class="highlight-item">
+                        <p class="label">Wind</p>
+                        <div class="value">
+                            <i class="air" data-lucide="wind"></i>
+                            <span id="windSpeed">-- m/s</span>
+                            <i data-lucide="compass" id="windDirection"></i>
+                        </div>
+                    </div>
+
+                    <div class="highlight-item">
+                        <p class="label">Pressure</p>
+                        <div class="value">
+                            <i class="press" data-lucide="gauge"></i>
+                            <span id="pressure">-- hPa</span>
+                        </div>
+                    </div>
+
+                    <div class="highlight-item">
+                        <p class="label">Visibility</p>
+                        <div class="value">
+                            <i class="visible" data-lucide="eye"></i>
+                            <span id="visibility">-- km</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sunrise & Sunset -->
+                <div class="sun-times">
+                    <h3>Sunrise & Sunset</h3>
+                    <div class="sun-grid">
+                        <div class="sun-item">
+                            <div class="value">
+                                <i data-lucide="sun" class="sun-icon"></i>
+                                <span id="sunrise">--:--</span>
+                            </div>
+                        </div>
+                        <div class="sun-item">
+                            <div class="value">
+                                <i data-lucide="moon" class="moon-icon"></i>
+                                <span id="sunset">--:--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8-Day Forecast -->
+            <div class="forecast-card">
+                <h3>5-Day Forecast</h3>
+                <div id="forecastGrid" class="forecast-grid">
+                    <!-- Forecast items will be added dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+    <script src="../static/css/weather.js"></script>
+</body>
+</html>

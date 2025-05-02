@@ -1,0 +1,614 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=EB+Garamond:wght@400&display=swap');
+
+/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: #f3f4f6;
+    min-height: 100vh;
+}
+
+.flex {
+    display: flex;
+}
+
+/* Sidebar styles */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 256px;
+    background-color: #0f131a;
+    transform: translateX(0);
+    transition: transform 0.3s ease-in-out;
+    z-index: 50;
+}
+
+.sidebar.closed {
+    transform: translateX(-100%);
+}
+
+.close-button {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    color: white;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: none;
+}
+
+.sidebar-nav {
+    margin-top: 4rem;
+    padding: 0 1rem;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-link {
+    display: block;
+    align-items: center;
+    padding: 1rem 1rem;
+    color: white;
+    font-family: 'EB Garamond', serif;
+    font-size: 21px;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.nav-link:hover {
+    background-color: #1f2937;
+}
+
+.nav-link.active {
+    background-color: #4f46e5;
+    color: white;
+    font-weight: bold;
+}
+
+.nav-link i {
+    margin-right: 0.75rem;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.a{
+    margin-right: 10px;
+    margin-top: 1px;
+}
+
+
+/* Main content styles */
+.main-content {
+    flex: 1;
+    margin-left: 256px;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.main-content.expanded {
+    margin-left: 0;
+}
+
+/* Header styles */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1000; /* Ensure it's above other elements */
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px 20px;
+    background: linear-gradient(to left, #5d5a5a, #000000);
+    color: #fff;
+    font-size: 20px;
+    height: 100px;
+}
+
+
+.header-container {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.menu-button {
+    
+    color: white;
+    background: none;
+    font-size: 29px;
+    border: none;
+    cursor: pointer;
+    margin-top: 5px;
+    background: #fff;
+    border-radius: 50%;
+    padding-left: 9px ;
+    padding-right: 9px;
+    padding-bottom: 3px;
+    padding-top: 7px;
+    color: #030303;
+    font-weight: bolder;
+    
+}
+
+.m{
+    font-size: larger;
+}
+
+.menu-button i {
+    width: 2rem;
+    height: 2rem;
+}
+
+header .project-name {
+    font-family: 'The Seasons', serif;
+    font-size: 48px;
+    align-items: center;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin: 0 auto;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    position: relative;
+    top: 0px;
+}
+
+header .project-name .large-letter {
+    font-size: 65px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+}
+/* .header-title {
+    font-size: 2.25rem;
+    font-weight: bold;
+    color: white;
+    letter-spacing: 0.05em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+} */
+
+
+
+
+.nav-link, .language-dropdown {
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    padding: 1rem;
+    background-color: #8f8c8c;
+    margin-top: 0.5rem;
+    color: #ffffff;
+    border-radius: 5px;
+}
+
+.nav-link:hover .dropdown-content {
+    display: block;
+}
+
+.domain-section, .country-section {
+    margin-bottom: 1rem;
+}
+
+select {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+}
+
+/* Main container styles */
+.main-container {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Profile Section Styles */
+.profile-section {
+    position: sticky; /* Makes the profile section stick to its position */
+    top: 100px; /* Adjust this value to match the height of the title or content above */
+    z-index: 1000; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to left,#000000, #3b3a3a);
+    padding: 32px;
+    border-radius: 8px;
+    box-shadow: 0 0 14px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+/* User Info on the Left Side */
+.user-info {
+    text-align: left;
+}
+
+.user-info h3 {
+    margin-bottom: 20px;
+    margin-left: 20px;
+    font-size: 25px;
+    color: #ffffff;
+}
+
+.user-info p {
+    margin: 5px 0;
+    margin-left: 10px;
+    color: #ffffff;
+    font-size: 18px;
+}
+
+/* User Icon on the Right Side */
+.user-icon {
+    text-align: center;
+}
+
+.icon-circle {
+    width: 60px;
+    height: 60px;
+    background-color: #4CAF50; /* Green color */
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    margin: 0 auto;
+    margin-right: 12px;
+}
+
+/* User Name Below Icon */
+#user-name-icon {
+    margin-top: 8px;
+    margin-right: 10px;
+    font-size: 18px;
+    color: #ffffff;
+}
+
+/* Separator Line */
+.separator {
+    border: 2px solid #e3caca;
+    margin: 20px 0;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #111827;
+}
+
+.page-header p {
+    margin-top: 0.5rem;
+    color: #4b5563;
+}
+
+/* Articles grid */
+.articles-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.article-card {
+    background-color: white;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.article-content {
+    display: flex;
+}
+
+.article-image {
+    flex-shrink: 0;
+    width: 12rem;
+    height: 12rem;
+    object-fit: cover;
+}
+
+.article-details {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+}
+
+.article-meta {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4f46e5;
+    margin-bottom: 0.25rem;
+}
+
+.article-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.article-excerpt {
+    color: #4b5563;
+}
+
+.article-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.remove-button {
+    color: #dc2626;
+}
+
+.remove-button i {
+    fill: currentColor;
+}
+
+.share-button {
+    color: #4b5563;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .close-button {
+        display: block;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .article-content {
+        flex-direction: column;
+    }
+
+    .article-image {
+        width: 100%;
+        height: 12rem;
+    }
+}
+
+/* Center the News Cards */
+.articles-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the cards */
+    gap: 15px;
+}
+
+/* News Card Styling */
+.news-card {
+    width: 100%;
+    max-height: 350px;
+    margin-right: 50px;
+    margin-left: 60px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: row;
+    padding: 15px;
+    gap: 15px;
+}
+
+.news-card:hover {
+    transform: translateY(-3px);
+}
+
+/* Image Section */
+.news-image {
+    border-radius: 20px;
+    overflow: hidden;
+    width: 400px; /* Match the placeholder size */
+    height: 200px; /* Match the placeholder size */
+}
+
+.news-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensures the entire image fits without cropping */
+    border-radius: 10px;
+    display: block;
+}
+
+/* Content Section */
+.news-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Title & Source */
+.news-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #1f2937;
+    margin-top: 2px;
+}
+
+.news-source {
+    font-size: 0.98rem;
+    color: #4625eb;
+    font-weight: 500;
+    margin-top: 5px;
+    letter-spacing: 0.07rem;
+}
+
+/* Description */
+.news-desc {
+    font-size: 1.2rem;
+    color: #555;
+    line-height: 1.2;
+    margin-top: 5px;
+}
+
+/* Read More Button */
+.read-more-btn {
+    font-size: 0.98rem;
+    color: #4625eb;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+    margin-top: 10px;
+    letter-spacing: 0.07rem;
+}
+
+.read-more-btn:hover {
+    color: #0056b3;
+}
+
+/* Styled Remove Button */
+.remove-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+    gap: 8px; /* Space between icon and text */
+    width: fit-content;
+    margin-top: 10px;
+}
+
+.remove-btn i {
+    font-size: 16px;
+}
+
+.remove-btn:hover {
+    background-color: #c82333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .news-card {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 90%; /* Adjust for smaller screens */
+    }
+
+    .news-image {
+        width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+    }
+
+    .remove-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.centered-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%; /* Full height of the container */
+    margin-top: 50px; /* Optional: Add some spacing from the top */
+}
+
+.centered-text h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.centered-text p {
+    font-size: 1.2rem;
+    color: #555; /* Optional: Add a subtle color for the paragraph */
+}
+
+/* Center the text and button */
+.signup-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 18px; /* Add spacing above the button */
+}
+
+/* Style the "Sign Up" button */
+.signup-button {
+    background-color: #94bce7; /* Blue background */
+    color: rgb(0, 0, 0); /* White text */
+    border: none; /* Remove border */
+    padding: 10px 20px; /* Add padding */
+    font-size: 1rem; /* Adjust font size */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+    margin-left: 5px;
+}
+
+/* Hover effect for the button */
+.signup-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    color: #ffffff;
+}
+
+/* Style the text */
+.signup-container p {
+    color: white; /* White text */
+    font-size: 1.2rem; /* Adjust font size */
+    margin-bottom: 10px; /* Add spacing below the text */
+}
+
+/* Style the Logout button */
+#logout-button {
+    background-color: #dc3545; /* Red background for Logout */
+    color: white; /* White text */
+    border: none; /* Remove border */
+    padding: 10px 20px; /* Add padding */
+    font-size: 1rem; /* Adjust font size */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    margin-top: 10px; /* Add spacing above the button */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+/* Hover effect for the Logout button */
+#logout-button:hover {
+    background-color: #a60515; /* Darker red on hover */
+}
+

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart News Assistant</title>
+    <link rel="stylesheet" href="../static/css/bot.css">
+</head>
+
+<body>
+    <div class="app">
+        <!-- History Sidebar -->
+        <!-- <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3v18h18" />
+                        <path d="m19 9-5 5-4-4-3 3" />
+                    </svg>
+                    <h2>Chat History</h2>
+                </div>
+            </div>
+            <button id="newChatBtn" class="new-chat-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5v14M5 12h14" />
+                </svg>
+                New Chat
+            </button>
+            <div class="history-list" id="historyList">
+                Chat history items will be dynamically added here
+            </div>
+        </div> -->
+
+        <!-- Main Chat Area -->
+        <div class="main-chat">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="bot-avatar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 8V4H8" />
+                        <path d="M12 4h4" />
+                        <rect x="4" y="8" width="16" height="12" rx="2" />
+                        <path d="M2 14h2" />
+                        <path d="M20 14h2" />
+                        <path d="M15 13v2" />
+                        <path d="M9 13v2" />
+                    </svg>
+                </div>
+                <div class="header-info">
+                    <h3>Smart News Assistant</h3>
+                    <p>Online • Ready to help</p>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="messages" id="messages">
+                <!-- Messages will be added here by JavaScript -->
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input">
+                <form id="chatForm">
+                    <div class="input-wrapper">
+                        <input type="text" id="messageInput" placeholder="Type your message..." disabled>
+                        <div class="button-group">
+                            <button type="submit" class="send-btn" disabled>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="m22 2-7 20-4-9-9-4Z" />
+                                    <path d="M22 2 11 13" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Important Note Modal -->
+    <!-- <div id="importantNoteModal" class="modal">
+        <div class="modal-content">
+            <h2>Important Note*</h2>
+            <p>For text input, the default language is English.</p>
+        </div>
+    </div> -->
+
+    <script src="../static/css/bot.js"></script>
+</body>
+
+</html>

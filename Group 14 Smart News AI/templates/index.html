@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart News</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=The+Seasons&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"> 
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        .popup {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 300px;
+            max-width: 90%;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .popup-content {
+            position: relative;
+        }
+
+        .popup-content p {
+            font-size: 16px;
+            color: #333;
+            margin: 0;
+        }
+
+        .popup-content .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+        .popup-content .close-btn:hover {
+            color: #333;
+        }
+    </style>
+</head>
+<body>  
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar">
+            <button class="close-button" onclick="toggleSidebar()">
+                <i data-lucide="x"></i>
+            </button>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">
+                        <i data-lucide="home"></i>
+                        Home
+                    </a>
+                    <a href="aboutus.html" class="nav-link">
+                        <i data-lucide="info"></i>
+                        About Us
+                    </a>
+                    <div class="nav-link">
+                        <i data-lucide="menu"></i>
+                        Categories
+                        <div class="dropdown-content">
+                            <div class="domain-section">
+                                <h3>Domain</h3>
+                                <select id="domainSelect">
+                                    <option value="business">Business</option>
+                                    <option value="politics">Politics</option>
+                                    <option value="sports">Sports</option>
+                                    <option value="technology">Technology</option>
+                                    <option value="startups">Startups</option>
+                                    <option value="science">Science</option>
+                                    <option value="travel">Travel</option>
+                                    <option value="fashion">Fashion</option>
+                                    <option value="entertainment">Entertainment</option>
+                                </select>
+                            </div>
+                            <div class="country-section">
+                                <h3>Country</h3>
+                                <select id="countrySelect">
+                                    <option value="in">India</option>
+                                    <option value="ir">International</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="weather.html" class="nav-link">
+                        <i data-lucide="cloud"></i>
+                        Weather
+                    </a>
+                    <a id="historical-news-button" href="historical.html" class="nav-link">
+                        <i data-lucide="history"></i>
+                        Historical News
+                    </a>
+                    <a href="favourites.html" class="nav-link">
+                        <i data-lucide="heart"></i>
+                        Profile/Favourites
+                    </a>
+                    <div href="#" class="nav-link" id="google_translate_element">
+                        <i data-lucide="languages"></i>
+                        Language
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <div id="main-content" class="main-content">
+            <header class="header">
+                <div class="header-container">
+                    <button class="menu-button" onclick="toggleSidebar()">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div onclick="reload()" class="project-name">
+                        <span class="large-letter">S</span>mart <span class="large-letter">N</span>ews
+                    </div>
+                    <div id="profile-section" class="profile-container">
+                        <div id="profile-icon" class="profile-icon"></div>
+                        <span id="profile-name" class="profile-name"></span>
+                        <div id="dropdown" class="dropdown" style="display: none;">
+                            <button id="logout">Logout</button>
+                        </div>
+                    </div>
+                    <div id="login-icon"   class="login-icon"><a href="login.html"><img src="../static/css/images/icons8-login-50.png" alt="login icon"></a></div>
+                </div>
+            </header>
+    
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" id="search-text" class="news-input" placeholder="Search for news..."> 
+                <button id="search-button" class="search-button">Search</button>
+            </div>
+
+            <!-- News containers portion -->
+            <main>
+                <div class="cards-container container flex" id="cards-container"></div>
+            </main>
+
+            <!-- News Card Template -->
+            <template id="template-news-card">
+                <div class="news-card animated">
+                    <div class="news-image">
+                        <img src="https://via.placeholder.com/400x200" alt="news-image" id="news-img">
+                    </div>
+                    <div class="card-content">
+                        <h3 id="news-title" class="news-title">This is title</h3>
+                        <h6 id="news-source" class="news-source">End Gadget • 31/1/2025</h6>
+                        <p id="news-desc" class="news-desc">Lorem ipsum dolor sit amet consectetur.</p>
+                        <a id="news-url" class="read-more-btn" href="#" target="_blank">Read More</a>
+                        <div class="news-actions">
+                            <button class="action-btn like-btn" data-tooltip="Favourites"><i class="fas fa-heart"></i></button>
+                            <button class="action-btn share-btn" data-tooltip="Share"><i class="fas fa-share"></i></button>
+                            <button class="action-btn summarize-btn" data-tooltip="Summary"><i class="fas fa-file-alt"></i></button>
+                        </div>
+                        <div class="summary-content sliding-window" style="display: none;">
+                            <div class="summary-header">
+                                <button class="voice-btn" data-tooltip="Voice"><i class="fas fa-volume-up"></i></button>
+                                <h3 class="summary-heading">Summary</h3>
+                                <button class="close-summary-btn" data-tooltip="Close">&times;</button>
+                            </div>
+                            <p class="news-summary"></p>
+                            <!-- Updated Need Help Button -->
+                            <button class="help-btn round-help-btn" data-tooltip="Need Help" onclick="openChatbotWithUrl(this)" style="display: none;">
+                                <i class="fas fa-question-circle"></i> Need Help
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <div class="scroll-to-top" id="scrollToTop">
+                <i class="fas fa-arrow-up"></i>
+            </div>
+
+            <!-- <div class="chatbot-button" id="chatbotButton">
+                <i class="fas fa-robot"></i>
+            </div> -->
+
+    <!-- Initialize Lucide icons -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
+
+    <script src="../static/css/script.js"></script>
+    
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,hi,mr',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>    
+    
+    <script>
+        // Function to animate the display of the summary text
+        function animateSummary(element, text) {
+            element.innerHTML = '';
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index < text.length) {
+                    element.innerHTML += text[index];
+                    index++;
+                } else {
+                    clearInterval(interval);
+                    const helpButton = element.closest('.summary-content').querySelector('.help-btn');
+                    helpButton.style.display = 'flex'; // Make the button visible
+                }
+            }, 30);
+        }
+    
+        // Add event listener when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            let currentUtterance = null;
+    
+            // Event delegation for handling clicks
+            document.addEventListener('click', async function (event) {
+                const target = event.target;
+    
+                // Handle summarize button click
+                if (target.closest('.summarize-btn')) {
+                    const card = target.closest('.news-card');
+                    if (!card) return;
+    
+                    const summaryContainer = card.querySelector('.summary-content');
+                    const summaryText = card.querySelector('.news-summary');
+                    const newsUrl = card.querySelector('#news-url').href;
+                    const newsDesc = card.querySelector('#news-desc');
+    
+                    if (!summaryContainer || !summaryText || !newsDesc) return;
+    
+                    if (!summaryContainer.classList.contains('show')) {
+                        // Show the sliding window instantly
+                        summaryContainer.style.display = 'block';
+                        setTimeout(() => {
+                            summaryContainer.classList.add('show');
+                        }, 10);
+    
+                        if (!summaryText.innerText.trim()) {
+                            // Show loading animation
+                            summaryText.innerHTML = '<div class="loading-dots"><div></div><div></div><div></div></div>';
+                            
+                            try {
+                                // Send the URL directly to the summarize endpoint
+                                const response = await fetch('http://127.0.0.1:5001/summarize', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ url: newsUrl })
+                                });
+    
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! Status: ${response.status}`);
+                                }
+    
+                                const data = await response.json();
+                                
+                                if (data.error) {
+                                    throw new Error(data.error);
+                                }
+    
+                                animateSummary(summaryText, data.summary);
+                            } catch (error) {
+                                console.error('Error:', error);
+                                summaryText.innerText = 'Sorry, we couldn\'t generate a summary at this time. Please try again later.';
+                            }
+                        }
+    
+                        newsDesc.style.display = 'none';
+                    }
+                }
+    
+                // Handle close summary button click
+                if (target.classList.contains('close-summary-btn')) {
+                    const card = target.closest('.news-card');
+                    if (!card) return;
+    
+                    const summaryContainer = card.querySelector('.summary-content');
+                    const newsDesc = card.querySelector('#news-desc');
+    
+                    if (!summaryContainer || !newsDesc) return;
+    
+                    // Stop any ongoing speech
+                    if (speechSynthesis.speaking) {
+                        speechSynthesis.cancel();
+                    }
+    
+                    // Close the summary window
+                    summaryContainer.classList.remove('show');
+                    setTimeout(() => {
+                        summaryContainer.style.display = 'none';
+                        newsDesc.style.display = 'block';
+                    }, 300);
+                }
+            });
+
+            // Stop speech synthesis when the page is hidden or unloaded
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && speechSynthesis.speaking) {
+                    speechSynthesis.cancel();
+                }
+            });
+
+            window.addEventListener('beforeunload', () => {
+                if (speechSynthesis.speaking) {
+                    speechSynthesis.cancel();
+                }
+            });
+        });
+
+        // Chatbot button click functionality
+        document.getElementById('chatbotButton').addEventListener('click', function() {
+            window.open('bot.html', '_blank'); // Open bot.html in a new tab
+        });
+    </script>
+
+    <script>
+        function openChatbotWithUrl(button) {
+            // Get the news URL from the card
+            const newsUrl = button.closest('.news-card').querySelector('#news-url').href;
+            // Open chatbot with URL as parameter
+            window.open(`bot.html?url=${encodeURIComponent(newsUrl)}`, '_blank');
+        }
+    </script>
+
+    <script>
+        let currentAudio = null;
+        let isPaused = false;
+        let currentAudioPosition = 0;
+
+        async function playSummaryAudio(summaryText, lang, button) {
+            try {
+                if (currentAudio && !currentAudio.paused) {
+                    // Pause the audio if it's already playing
+                    currentAudio.pause();
+                    isPaused = true;
+                    currentAudioPosition = currentAudio.currentTime;
+                    button.innerHTML = '<i class="fas fa-volume-up"></i>'; // Change icon to "not reading"
+                    return;
+                }
+
+                if (isPaused && currentAudio) {
+                    // Resume the audio if it was paused
+                    currentAudio.currentTime = currentAudioPosition;
+                    currentAudio.play();
+                    isPaused = false;
+                    button.innerHTML = '<i class="fas fa-pause"></i>'; // Change icon to "reading"
+                    return;
+                }
+
+                // Show loading state on the button
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                // Fetch audio from the backend
+                const response = await fetch('http://127.0.0.1:5001/generate-audio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: summaryText, lang: lang })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                // Create an audio element and play the streamed audio
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                currentAudio = new Audio(audioUrl);
+
+                currentAudio.addEventListener('ended', () => {
+                    button.innerHTML = '<i class="fas fa-volume-up"></i>'; // Reset icon after playback ends
+                    currentAudio = null;
+                    isPaused = false;
+                    currentAudioPosition = 0;
+                });
+
+                currentAudio.play();
+                button.innerHTML = '<i class="fas fa-pause"></i>'; // Change icon to "reading"
+            } catch (error) {
+                console.error('Error playing audio:', error);
+                alert('Failed to play audio. Please try again.');
+                button.innerHTML = '<i class="fas fa-volume-up"></i>'; // Reset icon on error
+            }
+        }
+
+        // Update the voice button click handler
+        document.addEventListener('click', function (event) {
+            if (event.target.closest('.voice-btn')) {
+                const card = event.target.closest('.news-card');
+                if (!card) return;
+
+                const summaryText = card.querySelector('.news-summary').innerText;
+                const lang = document.documentElement.lang || 'en'; // Default to English
+                const button = event.target.closest('.voice-btn');
+
+                playSummaryAudio(summaryText, lang, button);
+            }
+        });
+    </script>
+
+<footer>
+    <p>&copy; 2025 Smart News. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

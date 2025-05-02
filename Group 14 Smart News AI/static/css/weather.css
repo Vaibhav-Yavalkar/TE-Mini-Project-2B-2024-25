@@ -1,0 +1,404 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=EB+Garamond:wght@400&display=swap');
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'The Seasons', serif; ;
+    background: linear-gradient(to bottom, #f8f8f8, #e0e0e0);
+    color: #222;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* Header styles */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    background: #595757;
+    padding: 5px;
+    border-bottom: 3px solid #222;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header .logo {
+    display: flex;
+    align-items: center;
+    letter-spacing: 3px;
+    color: #fffefe;
+    text-transform:uppercase ;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+    position: relative;
+    font-size: 33px;
+    font-weight: 500px;
+    margin:0 auto
+    /* text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7); */
+    
+}
+
+.cloud-logo{
+    color: #ffffff;
+    margin-left: 0pxs;
+}
+
+header .logo .large-letter {
+    font-size: 44px; /* Larger size for S and N */
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7); /* More pronounced shadow */
+    margin-bottom: 16px;
+    margin-top: 10px;
+    letter-spacing: 2px;
+    
+}
+
+.logo span {
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #f6f6f6;
+    letter-spacing: 2px;
+    
+}
+
+.search-container {
+    position: relative;
+    flex: 1;
+    max-width: 28rem;
+    margin: 0 7.5rem;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.75rem;
+    height: 100px;
+    padding-top: 35px;
+    transform: translateY(-50%);
+    color: #080808;
+}
+
+#searchInput {
+    width: 100%;
+    background-color: #ffffff;
+    border: 3px solid #222;
+    border-radius: 7px;
+    padding: 0.5rem 1rem 0.5rem 2.5rem;
+    color: #0e0e0e;
+    outline: none;
+    transition: all 0.2s;
+}
+
+#searchInput:focus {
+    box-shadow: 0 0 5px rgba(34, 34, 34, 0.5);
+}
+
+.suggestion{
+    font-size: 120px;
+    color: #ffffff;
+}
+
+
+.location-btn {
+
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    color: #0a0a0a;
+    border: 2px solid #080808;
+    border-radius: 5px;
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
+    padding: 0.5rem 1rem;
+    padding-bottom: 10px;
+    padding-top: 7px;
+    cursor: pointer;
+    border-radius: 9999px;
+    letter-spacing: 1px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.location-btn:hover {
+    background: #6c8ae4;
+}
+
+/* Cards and layout */
+.weather-card,
+.details-card,
+.forecast-card {
+    background: #ffffff;
+    border: 2px solid #222;
+    border-radius: 5px;
+    padding: 1.5rem;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+    color: #222;
+}
+
+h3 {
+    font-size: 1.5rem;
+    font-family:'EB Garamond', serif ;
+    font-weight: 700;
+    border-bottom: 2px solid #222;
+    padding-bottom: 0.5rem;
+    color: #0f0f0f;
+}
+
+.highlight-item, .sun-item, .forecast-item {
+    background: #ffffff;
+    border: 1px solid #222;
+    font-family: 'EB Garamond', serif;
+    padding: 1rem;
+    border-radius: 5px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+    color: #040404;
+}
+
+/* Grid layout */
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .grid-container {
+        grid-template-columns: 1fr 2fr;
+    }
+}
+
+.forecast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Spinner */
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+}
+
+.spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 2px solid #cbc4c4;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error message */
+.error-message {
+    background-color: #ffffff;
+    border: 2px solid red;
+    color: red;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none;
+}
+
+
+/* Grid layout */
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .grid-container {
+        grid-template-columns: 1fr 2fr;
+    }
+    
+    .forecast-card {
+        grid-column: 1 / -1;
+    }
+}
+
+.temp-unit-selection {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.temp-unit-selection label {
+    margin: 0 1rem;
+    font-size: 23px;
+    font-weight: 600;
+    font-family: 'Cormorant Garamond', serif ;
+    cursor: pointer;
+}
+
+/* Card styles */
+.weather-card,
+.details-card,
+.forecast-card {
+    background-color: rgb(156, 167, 183);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+/* Current weather styles */
+.current-weather {
+    text-align: center;
+}
+
+.current-weather h2 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-family: 'EB Garamond', serif;
+}
+
+.weather-desc {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 100;
+}
+
+.weather-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    color: rgb(0, 0, 0);
+    font-family: 'EB Garamond', serif;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+/* Highlights styles */
+.highlights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.highlight-item {
+    background-color: rgb(254, 254, 255);
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.label {
+    color: rgb(0, 0, 0);
+    margin-bottom: 0.5rem;
+    font-family: 'EB Garamond', serif;
+    font-size: 19px;
+    font-weight: 400;
+}
+
+.value {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    
+}
+
+.heat{
+    color: #a43306;
+    font-size: 10px;
+} 
+
+.drop{
+    color: #0660c0;
+}
+
+.air{
+    color: #035e0f;
+}
+
+.press{
+    color: #b30707;
+}
+
+.visible{
+    color: #565353;
+}
+
+
+/* Sun times styles */
+.sun-times {
+    margin-top: 1.5rem;
+}
+
+.sun-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.sun-item {
+    background-color: rgb(255, 255, 255);
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.sun-icon {
+    color: rgb(199, 151, 8);
+}
+
+.moon-icon {
+    color: rgb(40, 130, 240);
+}
+
+/* Forecast styles */
+.forecast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.forecast-item {
+    background-color: rgb(87, 110, 135);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    
+}
+
+.forecast-item img {
+    width: 5rem;
+    height: 5rem;
+    margin: 0.5rem auto;
+}
+
+h3 {
+    font-size: 23px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+
+}

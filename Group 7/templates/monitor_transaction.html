@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor Transactions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: white;
+            background: #000428;
+            overflow-x: hidden;
+        }
+
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                linear-gradient(45deg, #000428 0%, #004e92 100%),
+                radial-gradient(circle at 50% 0%, #1a2980 0%, #26d0ce 100%);
+            overflow: hidden;
+        }
+
+        .grid {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                linear-gradient(rgba(38, 208, 206, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(38, 208, 206, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: rotate(45deg);
+            animation: gridMove 20s linear infinite;
+            top: -50%;
+            left: -50%;
+        }
+
+        @keyframes gridMove {
+            0% { transform: rotate(45deg) translateY(0); }
+            100% { transform: rotate(45deg) translateY(-100px); }
+        }
+
+        .container {
+            margin: 40px auto;
+            padding: 0 40px;
+            max-width: 95%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-title {
+            text-align: center;
+            margin: 40px 0;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .main-title h1 {
+            font-size: 2.5em;
+            margin: 0;
+            background: linear-gradient(45deg, #26d0ce, #1a2980);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-title p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+
+        .fetch-section {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        #fetchButton {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #2196f3, #00bcd4);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 188, 212, 0.2);
+        }
+
+        #fetchButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 188, 212, 0.3);
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(0, 188, 212, 0.1);
+            font-weight: 600;
+            color: #00bcd4;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        tr {
+            transition: all 0.3s ease;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        tr.suspicious {
+            background: rgba(255, 68, 68, 0.15);
+        }
+        
+        tr.suspicious:hover {
+            background: rgba(255, 68, 68, 0.2);
+        }
+
+        #fetchButton.loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        #fetchButton.loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .transaction-details {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-transactions {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-background">
+        <div class="grid"></div>
+    </div>
+    <a href="/" class="back-button">Back to Home</a>
+    <div class="container">
+        <div class="main-title">
+            <h1>Transaction Monitoring</h1>
+            <p>Real-time monitoring and analysis of financial transactions</p>
+        </div>
+
+        <div class="fetch-section">
+            <button id="fetchButton" onclick="fetchTransactions()">
+                <i class="fas fa-sync-alt"></i>
+                Fetch New Transactions
+            </button>
+        </div>
+
+        <div id="transactionsTableContainer">
+            <!-- Table will be populated here -->
+        </div>
+    </div>
+
+    <script>
+        function createParticles() {
+            // Removed particle effect as we now have the grid animation
+        }
+
+        function fetchTransactions() {
+            const button = document.getElementById('fetchButton');
+            const container = document.getElementById('transactionsTableContainer');
+            
+            // Add loading state
+            button.classList.add('loading');
+            
+            fetch('/get-transactions')
+                .then(response => response.json())
+                .then(data => {
+                    button.classList.remove('loading');
+                    
+                    if (data.transactions && data.transactions.length > 0) {
+                        // Create table
+                        const table = document.createElement('table');
+                        table.innerHTML = `
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Customer ID</th>
+                                    <th>Time</th>
+                                    <th>Amount</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.transactions.map(transaction => `
+                                    <tr class="${transaction.is_suspicious ? 'suspicious' : ''}">
+                                        <td>${transaction.transaction_id}</td>
+                                        <td>${transaction.customer_id}</td>
+                                        <td>${transaction.transaction_time}</td>
+                                        <td>$${transaction.amount}</td>
+                                        <td>${transaction.transaction_type}</td>
+                                        <td>${transaction.transaction_description}</td>
+                                        <td>${transaction.is_suspicious ? 
+                                            '<span style="color: #ff4444;"><i class="fas fa-exclamation-triangle"></i> Suspicious</span>' : 
+                                            '<span style="color: #4CAF50;"><i class="fas fa-check-circle"></i> Normal</span>'
+                                        }</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        `;
+                        container.innerHTML = '';
+                        container.appendChild(table);
+                    } else {
+                        container.innerHTML = `
+                            <div class="no-transactions">
+                                <i class="fas fa-info-circle" style="font-size: 24px; margin-bottom: 10px;"></i>
+                                <p>${data.message || 'No transactions available'}</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    button.classList.remove('loading');
+                    container.innerHTML = `
+                        <div class="no-transactions" style="color: #ff4444;">
+                            <i class="fas fa-exclamation-circle" style="font-size: 24px; margin-bottom: 10px;"></i>
+                            <p>Error fetching transactions: ${error.message}</p>
+                        </div>
+                    `;
+                });
+        }
+
+        // Load transactions when page loads
+        window.onload = function() {
+            fetchTransactions();
+        };
+    </script>
+</body>
+</html>
